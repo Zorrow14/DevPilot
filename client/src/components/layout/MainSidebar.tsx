@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoutButton } from "@/src/components/auth/LogoutButton";
 import { routes } from "@/src/constants/routes";
 
 const navItems = [
@@ -31,6 +32,9 @@ export function MainSidebar() {
           </Link>
         ))}
       </nav>
+      <div className="mt-6 hidden lg:block">
+        <LogoutButton className="w-full" />
+      </div>
     </aside>
   );
 }

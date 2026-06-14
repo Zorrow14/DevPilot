@@ -1,13 +1,11 @@
 import { cn } from "@/src/lib/utils";
 
-type InputProps = {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  React.TextareaHTMLAttributes<HTMLTextAreaElement> &
+  React.SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
   as?: "input" | "textarea" | "select";
-  type?: string;
-  placeholder?: string;
-  rows?: number;
   children?: React.ReactNode;
-  className?: string;
 };
 
 export function Input({
@@ -18,6 +16,7 @@ export function Input({
   rows = 4,
   children,
   className,
+  ...props
 }: InputProps) {
   const fieldClassName = cn(
     "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-900",
@@ -27,11 +26,23 @@ export function Input({
 
   const field =
     as === "textarea" ? (
-      <textarea rows={rows} placeholder={placeholder} className={fieldClassName} />
+      <textarea
+        rows={rows}
+        placeholder={placeholder}
+        className={fieldClassName}
+        {...props}
+      />
     ) : as === "select" ? (
-      <select className={fieldClassName}>{children}</select>
+      <select className={fieldClassName} {...props}>
+        {children}
+      </select>
     ) : (
-      <input type={type} placeholder={placeholder} className={fieldClassName} />
+      <input
+        type={type}
+        placeholder={placeholder}
+        className={fieldClassName}
+        {...props}
+      />
     );
 
   if (!label) {
