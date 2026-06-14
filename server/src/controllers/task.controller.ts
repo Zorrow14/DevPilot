@@ -12,6 +12,14 @@ function getTaskId(req: Request) {
   return id;
 }
 
+function getAuthUserId(req: Request) {
+  if (!req.user?.dbUserId) {
+    throw new Error("Authenticated user is required.");
+  }
+
+  return req.user.dbUserId;
+}
+
 function handleControllerError(error: unknown, res: Response, next: NextFunction) {
   if (error instanceof Error && error.message.includes("not found")) {
     res.status(404).json({ message: error.message });
@@ -32,7 +40,11 @@ export async function updateTask(
   next: NextFunction,
 ) {
   try {
-    const task = await taskService.updateTask(getTaskId(req), req.body);
+    const task = await taskService.updateTask(
+      getAuthUserId(req),
+      getTaskId(req),
+      req.body,
+    );
     res.json(task);
   } catch (error) {
     handleControllerError(error, res, next);
@@ -45,7 +57,7 @@ export async function deleteTask(
   next: NextFunction,
 ) {
   try {
-    await taskService.deleteTask(getTaskId(req));
+    await taskService.deleteTask(getAuthUserId(req), getTaskId(req));
     res.status(204).send();
   } catch (error) {
     handleControllerError(error, res, next);

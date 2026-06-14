@@ -1,6 +1,10 @@
-// Express auth routes will be defined here.
+import { Router } from "express";
 
-export const authRoutes = {
-  basePath: "/api/auth",
-  plannedEndpoints: ["POST /register", "POST /login", "POST /logout", "GET /me"],
-};
+import { syncUser } from "../controllers/auth.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
+
+const router = Router();
+
+router.post("/sync-user", authMiddleware, syncUser);
+
+export default router;

@@ -12,13 +12,21 @@ function getSkillId(req: Request) {
   return id;
 }
 
+function getAuthUserId(req: Request) {
+  if (!req.user?.dbUserId) {
+    throw new Error("Authenticated user is required.");
+  }
+
+  return req.user.dbUserId;
+}
+
 export async function getSkills(
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const skills = await skillService.getSkills();
+    const skills = await skillService.getSkills(getAuthUserId(req));
     res.json(skills);
   } catch (error) {
     next(error);
@@ -31,7 +39,7 @@ export async function createSkill(
   next: NextFunction,
 ) {
   try {
-    const skill = await skillService.createSkill(req.body);
+    const skill = await skillService.createSkill(getAuthUserId(req), req.body);
     res.status(201).json(skill);
   } catch (error) {
     next(error);
@@ -44,7 +52,11 @@ export async function updateSkill(
   next: NextFunction,
 ) {
   try {
-    const skill = await skillService.updateSkill(getSkillId(req), req.body);
+    const skill = await skillService.updateSkill(
+      getAuthUserId(req),
+      getSkillId(req),
+      req.body,
+    );
     res.json(skill);
   } catch (error) {
     next(error);
@@ -57,7 +69,7 @@ export async function deleteSkill(
   next: NextFunction,
 ) {
   try {
-    await skillService.deleteSkill(getSkillId(req));
+    await skillService.deleteSkill(getAuthUserId(req), getSkillId(req));
     res.status(204).send();
   } catch (error) {
     next(error);

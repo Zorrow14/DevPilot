@@ -1,7 +1,6 @@
 import type { Priority, Task, TaskStatus } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
-import { getTemporaryUser } from "./devUser.service";
 
 export type TaskPayload = {
   title?: string;
@@ -76,12 +75,11 @@ function normalizeDueDate(dueDate?: string | null): Date | null | undefined {
   return date;
 }
 
-async function findOwnedProject(projectId: string) {
-  const user = await getTemporaryUser();
+async function findOwnedProject(userId: string, projectId: string) {
   const project = await prisma.project.findFirst({
     where: {
       id: projectId,
-      userId: user.id,
+      userId,
     },
   });
 
@@ -92,13 +90,12 @@ async function findOwnedProject(projectId: string) {
   return project;
 }
 
-async function findOwnedTask(taskId: string) {
-  const user = await getTemporaryUser();
+async function findOwnedTask(userId: string, taskId: string) {
   const task = await prisma.task.findFirst({
     where: {
       id: taskId,
       project: {
-        userId: user.id,
+        userId,
       },
     },
   });
@@ -110,8 +107,8 @@ async function findOwnedTask(taskId: string) {
   return task;
 }
 
-export async function getProjectTasks(projectId: string) {
-  await findOwnedProject(projectId);
+export async function getProjectTasks(userId: string, projectId: string) {
+  await findOwnedProject(userId, projectId);
 
   const tasks = await prisma.task.findMany({
     where: {
@@ -125,12 +122,16 @@ export async function getProjectTasks(projectId: string) {
   return tasks.map(formatTask);
 }
 
-export async function createTask(projectId: string, payload: TaskPayload) {
+export async function createTask(
+  userId: string,
+  projectId: string,
+  payload: TaskPayload,
+) {
   if (!payload.title) {
     throw new Error("Task title is required.");
   }
 
-  await findOwnedProject(projectId);
+  await findOwnedProject(userId, projectId);
 
   const task = await prisma.task.create({
     data: {
@@ -146,8 +147,8 @@ export async function createTask(projectId: string, payload: TaskPayload) {
   return formatTask(task);
 }
 
-export async function updateTask(taskId: string, payload: TaskPayload) {
-  await findOwnedTask(taskId);
+export async function updateTask(userId: string, taskId: string, payload: TaskPayload) {
+  await findOwnedTask(userId, taskId);
 
   const task = await prisma.task.update({
     where: {
@@ -165,8 +166,8 @@ export async function updateTask(taskId: string, payload: TaskPayload) {
   return formatTask(task);
 }
 
-export async function deleteTask(taskId: string) {
-  await findOwnedTask(taskId);
+export async function deleteTask(userId: string, taskId: string) {
+  await findOwnedTask(userId, taskId);
 
   await prisma.task.delete({
     where: {

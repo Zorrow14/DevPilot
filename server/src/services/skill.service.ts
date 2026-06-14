@@ -1,7 +1,6 @@
 import type { Skill, SkillLevel } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
-import { getTemporaryUser } from "./devUser.service";
 
 export type SkillPayload = {
   name?: string;
@@ -64,11 +63,10 @@ async function findOwnedSkill(skillId: string, userId: string) {
   return skill;
 }
 
-export async function getSkills() {
-  const user = await getTemporaryUser();
+export async function getSkills(userId: string) {
   const skills = await prisma.skill.findMany({
     where: {
-      userId: user.id,
+      userId,
     },
     orderBy: {
       createdAt: "desc",
@@ -78,15 +76,14 @@ export async function getSkills() {
   return skills.map(formatSkill);
 }
 
-export async function createSkill(payload: SkillPayload) {
+export async function createSkill(userId: string, payload: SkillPayload) {
   if (!payload.name || !payload.category) {
     throw new Error("Skill name and category are required.");
   }
 
-  const user = await getTemporaryUser();
   const skill = await prisma.skill.create({
     data: {
-      userId: user.id,
+      userId,
       name: payload.name,
       category: payload.category,
       level: normalizeSkillLevel(payload.level) ?? "BEGINNER",
@@ -98,9 +95,12 @@ export async function createSkill(payload: SkillPayload) {
   return formatSkill(skill);
 }
 
-export async function updateSkill(skillId: string, payload: SkillPayload) {
-  const user = await getTemporaryUser();
-  await findOwnedSkill(skillId, user.id);
+export async function updateSkill(
+  userId: string,
+  skillId: string,
+  payload: SkillPayload,
+) {
+  await findOwnedSkill(skillId, userId);
 
   const skill = await prisma.skill.update({
     where: {
@@ -118,9 +118,8 @@ export async function updateSkill(skillId: string, payload: SkillPayload) {
   return formatSkill(skill);
 }
 
-export async function deleteSkill(skillId: string) {
-  const user = await getTemporaryUser();
-  await findOwnedSkill(skillId, user.id);
+export async function deleteSkill(userId: string, skillId: string) {
+  await findOwnedSkill(skillId, userId);
 
   await prisma.skill.delete({
     where: {

@@ -1,7 +1,6 @@
 import type { Priority, Project, ProjectStatus } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
-import { getTemporaryUser } from "./devUser.service";
 
 export type ProjectPayload = {
   title?: string;
@@ -104,11 +103,10 @@ async function findOwnedProject(projectId: string, userId: string) {
   return project;
 }
 
-export async function getProjects() {
-  const user = await getTemporaryUser();
+export async function getProjects(userId: string) {
   const projects = await prisma.project.findMany({
     where: {
-      userId: user.id,
+      userId,
     },
     orderBy: {
       createdAt: "desc",
@@ -118,22 +116,20 @@ export async function getProjects() {
   return projects.map(formatProject);
 }
 
-export async function getProject(projectId: string) {
-  const user = await getTemporaryUser();
-  const project = await findOwnedProject(projectId, user.id);
+export async function getProject(userId: string, projectId: string) {
+  const project = await findOwnedProject(projectId, userId);
 
   return formatProject(project);
 }
 
-export async function createProject(payload: ProjectPayload) {
+export async function createProject(userId: string, payload: ProjectPayload) {
   if (!payload.title) {
     throw new Error("Project title is required.");
   }
 
-  const user = await getTemporaryUser();
   const project = await prisma.project.create({
     data: {
-      userId: user.id,
+      userId,
       title: payload.title,
       description: payload.description ?? null,
       techStack: payload.techStack ?? [],
@@ -147,9 +143,12 @@ export async function createProject(payload: ProjectPayload) {
   return formatProject(project);
 }
 
-export async function updateProject(projectId: string, payload: ProjectPayload) {
-  const user = await getTemporaryUser();
-  await findOwnedProject(projectId, user.id);
+export async function updateProject(
+  userId: string,
+  projectId: string,
+  payload: ProjectPayload,
+) {
+  await findOwnedProject(projectId, userId);
 
   const project = await prisma.project.update({
     where: {
@@ -169,9 +168,8 @@ export async function updateProject(projectId: string, payload: ProjectPayload) 
   return formatProject(project);
 }
 
-export async function deleteProject(projectId: string) {
-  const user = await getTemporaryUser();
-  await findOwnedProject(projectId, user.id);
+export async function deleteProject(userId: string, projectId: string) {
+  await findOwnedProject(projectId, userId);
 
   await prisma.project.delete({
     where: {

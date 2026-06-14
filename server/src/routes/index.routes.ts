@@ -2,11 +2,13 @@ import { Router } from "express";
 
 import adminRoutes from "./admin.routes";
 import announcementRoutes from "./announcement.routes";
+import authRoutes from "./auth.routes";
 import dashboardRoutes from "./dashboard.routes";
 import projectRoutes from "./project.routes";
 import roadmapRoutes from "./roadmap.routes";
 import skillRoutes from "./skill.routes";
 import taskRoutes from "./task.routes";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
@@ -16,11 +18,12 @@ router.get("/health", (_req, res) => {
   });
 });
 
-router.use("/dashboard", dashboardRoutes);
-router.use("/skills", skillRoutes);
-router.use("/projects", projectRoutes);
-router.use("/tasks", taskRoutes);
-router.use("/roadmaps", roadmapRoutes);
+router.use("/auth", authRoutes);
+router.use("/dashboard", authMiddleware, dashboardRoutes);
+router.use("/skills", authMiddleware, skillRoutes);
+router.use("/projects", authMiddleware, projectRoutes);
+router.use("/tasks", authMiddleware, taskRoutes);
+router.use("/roadmaps", authMiddleware, roadmapRoutes);
 router.use("/announcements", announcementRoutes);
 router.use("/admin", adminRoutes);
 
