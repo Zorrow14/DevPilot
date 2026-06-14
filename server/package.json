@@ -1,0 +1,12 @@
+{
+  "name": "devpilot-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

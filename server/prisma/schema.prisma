@@ -1,0 +1,11 @@
+// Prisma schema placeholder.
+// Database models will be added after PostgreSQL and Prisma are connected.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
