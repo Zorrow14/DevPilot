@@ -1,6 +1,10 @@
-// Express task routes will be defined here.
+import { Router } from "express";
 
-export const taskRoutes = {
-  basePath: "/api/tasks",
-  plannedEndpoints: ["GET /", "GET /:id", "POST /", "PATCH /:id", "DELETE /:id"],
-};
+import { deleteTask, updateTask } from "../controllers/task.controller";
+
+const router = Router();
+
+router.put("/:id", updateTask);
+router.delete("/:id", deleteTask);
+
+export default router;

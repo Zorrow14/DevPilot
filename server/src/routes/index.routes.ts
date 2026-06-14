@@ -6,6 +6,7 @@ import dashboardRoutes from "./dashboard.routes";
 import projectRoutes from "./project.routes";
 import roadmapRoutes from "./roadmap.routes";
 import skillRoutes from "./skill.routes";
+import taskRoutes from "./task.routes";
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.get("/health", (_req, res) => {
 router.use("/dashboard", dashboardRoutes);
 router.use("/skills", skillRoutes);
 router.use("/projects", projectRoutes);
+router.use("/tasks", taskRoutes);
 router.use("/roadmaps", roadmapRoutes);
 router.use("/announcements", announcementRoutes);
 router.use("/admin", adminRoutes);

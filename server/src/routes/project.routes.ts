@@ -1,28 +1,23 @@
 import { Router } from "express";
 
-import { mockProjects, mockTasks } from "../data/mockData";
+import {
+  createProject,
+  createProjectTask,
+  deleteProject,
+  getProject,
+  getProjects,
+  getProjectTasks,
+  updateProject,
+} from "../controllers/project.controller";
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  res.json(mockProjects);
-});
-
-router.get("/:id", (req, res) => {
-  const project = mockProjects.find((item) => item.id === req.params.id);
-
-  if (!project) {
-    res.status(404).json({ message: "Project not found" });
-    return;
-  }
-
-  res.json(project);
-});
-
-router.get("/:projectId/tasks", (req, res) => {
-  const tasks = mockTasks.filter((item) => item.projectId === req.params.projectId);
-
-  res.json(tasks);
-});
+router.get("/", getProjects);
+router.post("/", createProject);
+router.get("/:id", getProject);
+router.put("/:id", updateProject);
+router.delete("/:id", deleteProject);
+router.get("/:projectId/tasks", getProjectTasks);
+router.post("/:projectId/tasks", createProjectTask);
 
 export default router;
