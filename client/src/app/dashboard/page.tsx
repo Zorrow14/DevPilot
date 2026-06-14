@@ -1,34 +1,53 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import { AppShell } from "@/src/components/layout/AppShell";
 import { Badge } from "@/src/components/ui/Badge";
 import { Card } from "@/src/components/ui/Card";
+import { EmptyState } from "@/src/components/ui/EmptyState";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { AnnouncementPanel } from "@/src/components/dashboard/AnnouncementPanel";
 import { DashboardStats } from "@/src/components/dashboard/DashboardStats";
 import { RecentRoadmaps } from "@/src/components/dashboard/RecentRoadmaps";
 import { UpcomingTasks } from "@/src/components/dashboard/UpcomingTasks";
-import {
-  mockAnnouncements,
-  mockProjects,
-  mockRoadmaps,
-  mockSkills,
-  mockTasks,
-  mockUser,
-} from "@/src/data/mockData";
+import { api, type DashboardStatsResponse } from "@/src/lib/api";
 
 export default function DashboardPage() {
-  const recentRoadmap = mockRoadmaps[0];
-  const announcement = mockAnnouncements[0];
+  const [data, setData] = useState<DashboardStatsResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        setData(await api.getDashboardStats());
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to load dashboard data.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    void loadDashboard();
+  }, []);
 
   return (
     <AppShell
-      title={`Welcome back, ${mockUser.name.split(" ")[0]}`}
+      title={`Welcome back${data ? `, ${data.user.name.split(" ")[0]}` : ""}`}
       description="Your mock workspace for skills, projects, roadmaps, tasks, and readiness tracking."
     >
+      {isLoading ? (
+        <Card>Loading dashboard data...</Card>
+      ) : error ? (
+        <EmptyState title="Dashboard unavailable" description={error} />
+      ) : data ? (
+        <>
       <DashboardStats
-        skills={mockSkills}
-        projects={mockProjects}
-        tasks={mockTasks}
-        user={mockUser}
+            skills={data.skills}
+            projects={data.projects}
+            tasks={data.tasks}
+            user={data.user}
       />
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -40,7 +59,7 @@ export default function DashboardPage() {
             <Badge tone="indigo">Mock data</Badge>
           </div>
           <div className="space-y-5">
-            {mockProjects.map((project) => (
+                {data.projects.map((project) => (
               <div key={project.id}>
                 <div className="mb-2 flex items-center justify-between gap-4">
                   <p className="font-semibold text-slate-900 dark:text-slate-100">
@@ -56,13 +75,17 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        <UpcomingTasks tasks={mockTasks} />
+            <UpcomingTasks tasks={data.tasks} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <RecentRoadmaps roadmap={recentRoadmap} />
-        <AnnouncementPanel announcement={announcement} />
+            {data.roadmaps[0] ? <RecentRoadmaps roadmap={data.roadmaps[0]} /> : null}
+            {data.announcements[0] ? (
+              <AnnouncementPanel announcement={data.announcements[0]} />
+            ) : null}
       </div>
+        </>
+      ) : null}
     </AppShell>
   );
 }

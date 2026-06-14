@@ -1,10 +1,7 @@
-// Server startup will be completed after Express and TypeScript runtime tooling are installed.
-// Planned setup:
-// - import app from app.ts
-// - read PORT from config/env.ts
-// - call app.listen(PORT)
+import app from "./app";
 
-export const serverPlaceholder = {
-  port: 5000,
-  status: "Server startup pending",
-};
+const PORT = process.env.PORT ?? 5000;
+
+app.listen(PORT, () => {
+  console.log(`DevPilot API is running on port ${PORT}`);
+});

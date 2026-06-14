@@ -1,6 +1,25 @@
-// Express dashboard routes will be defined here.
+import { Router } from "express";
 
-export const dashboardRoutes = {
-  basePath: "/api/dashboard",
-  plannedEndpoints: ["GET /summary", "GET /readiness"],
-};
+import {
+  mockAnnouncements,
+  mockProjects,
+  mockRoadmaps,
+  mockSkills,
+  mockTasks,
+  mockUser,
+} from "../data/mockData";
+
+const router = Router();
+
+router.get("/stats", (_req, res) => {
+  res.json({
+    user: mockUser,
+    skills: mockSkills,
+    projects: mockProjects,
+    tasks: mockTasks,
+    roadmaps: mockRoadmaps,
+    announcements: mockAnnouncements,
+  });
+});
+
+export default router;

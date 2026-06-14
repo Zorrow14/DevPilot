@@ -1,6 +1,11 @@
-// Express announcement routes will be defined here.
+import { Router } from "express";
 
-export const announcementRoutes = {
-  basePath: "/api/announcements",
-  plannedEndpoints: ["GET /", "GET /:id"],
-};
+import { mockAnnouncements } from "../data/mockData";
+
+const router = Router();
+
+router.get("/", (_req, res) => {
+  res.json(mockAnnouncements);
+});
+
+export default router;

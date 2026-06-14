@@ -1,3 +1,7 @@
-// Not-found middleware will be registered after routes are wired.
+import type { Request, Response } from "express";
 
-export const notFoundMiddlewarePlaceholder = {};
+export const notFoundMiddleware = (req: Request, res: Response) => {
+  res.status(404).json({
+    message: `Route not found: ${req.method} ${req.originalUrl}`,
+  });
+};

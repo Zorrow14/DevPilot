@@ -1,5 +1,11 @@
-// Prisma Client will be initialized here after Prisma and PostgreSQL are connected.
+import { PrismaClient } from "@prisma/client";
 
-export const prismaPlaceholder = {
-  status: "Prisma Client not initialized",
+const globalForPrisma = globalThis as unknown as {
+  prisma?: PrismaClient;
 };
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}

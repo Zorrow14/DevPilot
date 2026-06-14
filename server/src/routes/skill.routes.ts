@@ -1,6 +1,17 @@
-// Express skill routes will be defined here.
+import { Router } from "express";
 
-export const skillRoutes = {
-  basePath: "/api/skills",
-  plannedEndpoints: ["GET /", "GET /:id", "POST /", "PATCH /:id", "DELETE /:id"],
-};
+import {
+  createSkill,
+  deleteSkill,
+  getSkills,
+  updateSkill,
+} from "../controllers/skill.controller";
+
+const router = Router();
+
+router.get("/", getSkills);
+router.post("/", createSkill);
+router.put("/:id", updateSkill);
+router.delete("/:id", deleteSkill);
+
+export default router;
