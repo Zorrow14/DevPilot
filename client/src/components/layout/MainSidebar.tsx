@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { LogoutButton } from "@/src/components/auth/LogoutButton";
+import { cn } from "@/src/lib/utils";
 import { routes } from "@/src/constants/routes";
 
 const navItems = [
@@ -11,26 +16,34 @@ const navItems = [
 ];
 
 export function MainSidebar() {
+  const pathname = usePathname();
+
   return (
-    <aside className="border-b border-slate-200 bg-white px-5 py-4 dark:border-slate-700 dark:bg-slate-800 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:py-6">
+    <aside className="border-b border-bezel bg-console px-5 py-4 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:py-6">
       <Link href={routes.home} className="block">
-        <p className="text-xl font-bold text-slate-900 dark:text-slate-100">
-          DevPilot
-        </p>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="font-display text-lg font-bold text-ink">DevPilot</p>
+        <p className="mt-1 font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
           Growth workspace
         </p>
       </Link>
-      <nav className="mt-6 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-indigo-700 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-indigo-300"
-          >
-            {item.label}
-          </Link>
-        ))}
+      <nav className="mt-6 flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+        {navItems.map((item) => {
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "whitespace-nowrap rounded-bezel border-l-2 px-3 py-2 text-sm font-medium transition",
+                active
+                  ? "border-beacon bg-console-raised text-beacon"
+                  : "border-transparent text-ink-dim hover:bg-console-raised hover:text-ink",
+              )}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
       <div className="mt-6 hidden lg:block">
         <LogoutButton className="w-full" />

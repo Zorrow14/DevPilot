@@ -3,7 +3,7 @@ import { Button } from "./Button";
 type ButtonLinkProps = {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "ghost";
   className?: string;
 };
 

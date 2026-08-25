@@ -6,16 +6,12 @@ type SectionHeaderProps = {
 
 export function SectionHeader({ title, description, action }: SectionHeaderProps) {
   return (
-    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div className="mb-5 flex flex-col gap-3 border-b border-bezel pb-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+        <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
           {title}
         </h2>
-        {description ? (
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {description}
-          </p>
-        ) : null}
+        {description ? <p className="mt-1.5 text-sm text-ink-dim">{description}</p> : null}
       </div>
       {action}
     </div>

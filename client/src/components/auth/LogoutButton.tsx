@@ -26,7 +26,7 @@ export function LogoutButton({ className }: LogoutButtonProps) {
   }
 
   return (
-    <Button variant="secondary" className={className} onClick={handleLogout}>
+    <Button variant="ghost" className={className} onClick={handleLogout}>
       Logout
     </Button>
   );

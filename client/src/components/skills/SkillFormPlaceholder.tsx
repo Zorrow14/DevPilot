@@ -7,14 +7,14 @@ export function SkillFormPlaceholder() {
   return (
     <Card>
       <SectionHeader
-        title="Add Skill"
+        title="Add skill"
         description="Static form placeholder for a later interactive phase."
       />
       <div className="grid gap-4 md:grid-cols-2">
         <Input label="Skill name" placeholder="React Foundations" />
         <Input label="Category" placeholder="Frontend" />
       </div>
-      <Button className="mt-4">Save Skill</Button>
+      <Button className="mt-4">Save skill</Button>
     </Card>
   );
 }

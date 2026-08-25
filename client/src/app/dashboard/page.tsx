@@ -53,23 +53,30 @@ export default function DashboardPage() {
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              Progress Overview
+            <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
+              Progress overview
             </h2>
-            <Badge tone="indigo">Mock data</Badge>
+            <Badge tone="beacon">Mock data</Badge>
           </div>
           <div className="space-y-5">
                 {data.projects.map((project) => (
               <div key={project.id}>
                 <div className="mb-2 flex items-center justify-between gap-4">
-                  <p className="font-semibold text-slate-900 dark:text-slate-100">
-                    {project.title}
-                  </p>
-                  <span className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="font-semibold text-ink">{project.title}</p>
+                  <span className="font-display text-sm text-ink-dim">
                     {project.progress}%
                   </span>
                 </div>
-                <ProgressBar value={project.progress} />
+                <ProgressBar
+                  value={project.progress}
+                  tone={
+                    project.status === "completed"
+                      ? "nominal"
+                      : project.status === "in-progress"
+                        ? "heading"
+                        : "beacon"
+                  }
+                />
               </div>
             ))}
           </div>

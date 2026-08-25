@@ -7,13 +7,12 @@ type EmptyStateProps = {
 
 export function EmptyState({ title, description }: EmptyStateProps) {
   return (
-    <Card className="text-center">
-      <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-        {title}
-      </h2>
-      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-        {description}
+    <Card className="border-dashed text-center">
+      <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-faint">
+        No signal
       </p>
+      <h2 className="mt-2 text-lg font-bold text-ink">{title}</h2>
+      <p className="mt-2 text-sm text-ink-dim">{description}</p>
     </Card>
   );
 }

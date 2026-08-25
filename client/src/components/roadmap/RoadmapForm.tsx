@@ -11,8 +11,8 @@ type RoadmapFormProps = {
 export function RoadmapForm({ roadmap, skills }: RoadmapFormProps) {
   return (
     <Card>
-      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-        Roadmap Builder
+      <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
+        Roadmap builder
       </h2>
       <form className="mt-5 space-y-4">
         <Input label="Career goal" placeholder="Become internship-ready" />
@@ -22,7 +22,7 @@ export function RoadmapForm({ roadmap, skills }: RoadmapFormProps) {
         />
         <Input label="Target role" placeholder={roadmap.targetRole} />
         <Input label="Duration" placeholder={roadmap.duration} />
-        <Button className="w-full">Generate Roadmap</Button>
+        <Button className="w-full">Generate roadmap</Button>
       </form>
     </Card>
   );

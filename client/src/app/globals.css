@@ -1,13 +1,42 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: light;
+@theme {
+  --font-display: var(--font-mono), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-grotesk), "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* Cockpit surfaces */
+  --color-panel: #10141c;
+  --color-console: #1b2130;
+  --color-console-raised: #232a3c;
+  --color-bezel: #2c3448;
+  --color-bezel-bright: #3c4560;
+
+  /* Chart-paper insert (used sparingly for form fields, code chips, zebra rows) */
+  --color-paper: #f3efe3;
+  --color-paper-line: #ddd6bf;
+  --color-paper-ink: #2a2620;
+
+  /* Text on dark */
+  --color-ink: #e9e6dc;
+  --color-ink-dim: #949cb0;
+  --color-ink-faint: #5c6478;
+
+  /* Instrument accents */
+  --color-beacon: #ff9f45;
+  --color-beacon-dim: #8a5a30;
+  --color-heading: #46c9b0;
+  --color-heading-dim: #285f56;
+  --color-nominal: #7cd98b;
+  --color-nominal-dim: #33532f;
+  --color-alert: #e8564a;
+  --color-alert-dim: #632f2a;
+
+  --radius-bezel: 4px;
+  --radius-dial: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+:root {
+  color-scheme: dark;
 }
 
 * {
@@ -20,5 +49,28 @@ html {
 
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-panel);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background-color: var(--color-beacon);
+  color: var(--color-panel);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-beacon);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

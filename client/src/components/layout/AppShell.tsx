@@ -11,7 +11,7 @@ type AppShellProps = {
 
 export function AppShell({ children, title, description, action }: AppShellProps) {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
+    <main className="min-h-screen bg-panel text-ink">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[260px_1fr]">
         <MainSidebar />
         <section className="w-full px-5 py-6 sm:px-8 lg:px-10">

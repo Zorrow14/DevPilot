@@ -12,17 +12,13 @@ export function AnnouncementPanel({ announcements }: AnnouncementPanelProps) {
   return (
     <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
       <Card>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-          Create Announcement
+        <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
+          Create announcement
         </h2>
         <form className="mt-5 space-y-4">
           <Input placeholder="Announcement title" />
-          <Input
-            as="textarea"
-            rows={5}
-            placeholder="Write a short platform update"
-          />
-          <Button className="w-full">Save Announcement</Button>
+          <Input as="textarea" rows={5} placeholder="Write a short platform update" />
+          <Button className="w-full">Save announcement</Button>
         </form>
       </Card>
       <div className="space-y-4">
@@ -30,18 +26,12 @@ export function AnnouncementPanel({ announcements }: AnnouncementPanelProps) {
           <Card key={announcement.id}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-bold text-slate-900 dark:text-slate-100">
-                  {announcement.title}
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                  {announcement.message}
-                </p>
+                <h2 className="font-bold text-ink">{announcement.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-ink-dim">{announcement.message}</p>
               </div>
-              <Badge tone="indigo">{announcement.audience}</Badge>
+              <Badge tone="beacon">{announcement.audience}</Badge>
             </div>
-            <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-              {announcement.createdAt}
-            </p>
+            <p className="mt-4 text-sm text-ink-dim">{announcement.createdAt}</p>
           </Card>
         ))}
       </div>

@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 
 import { Button } from "@/src/components/ui/Button";
+import { Card } from "@/src/components/ui/Card";
 import { Input } from "@/src/components/ui/Input";
 import { routes } from "@/src/constants/routes";
 import { auth, googleProvider } from "@/src/lib/firebase";
@@ -83,24 +84,22 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
-      <section className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
-        <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+    <main className="flex min-h-screen items-center justify-center bg-panel px-6 py-12 text-ink">
+      <Card className="w-full max-w-md sm:p-8">
+        <p className="font-display text-xs font-bold uppercase tracking-wider text-beacon">
           DevPilot
         </p>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">
-          Welcome back
-        </h1>
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <h1 className="mt-3 text-2xl font-bold text-ink">Welcome back</h1>
+        <p className="mt-2 text-sm text-ink-dim">
           Sign in with your verified email address or continue with Google.
         </p>
         {message ? (
-          <p className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+          <p className="mt-5 rounded-bezel border border-nominal-dim bg-nominal-dim/20 px-4 py-3 text-sm text-nominal">
             {message}
           </p>
         ) : null}
         {error ? (
-          <p className="mt-5 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+          <p className="mt-5 rounded-bezel border border-alert-dim bg-alert-dim/20 px-4 py-3 text-sm text-alert">
             {error}
           </p>
         ) : null}
@@ -124,7 +123,7 @@ export default function LoginPage() {
           <div className="flex justify-end">
             <button
               type="button"
-              className="text-sm font-semibold text-indigo-700 hover:text-indigo-800 dark:text-indigo-300"
+              className="text-sm font-semibold text-beacon hover:brightness-110"
               onClick={handlePasswordReset}
               disabled={isSubmitting}
             >
@@ -144,13 +143,13 @@ export default function LoginPage() {
             Continue with Google
           </Button>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-center text-sm text-ink-dim">
           New to DevPilot?{" "}
-          <Link href={routes.register} className="font-semibold text-indigo-700 dark:text-indigo-300">
+          <Link href={routes.register} className="font-semibold text-beacon">
             Create an account
           </Link>
         </p>
-      </section>
+      </Card>
     </main>
   );
 }

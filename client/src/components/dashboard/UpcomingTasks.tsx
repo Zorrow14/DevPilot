@@ -21,22 +21,15 @@ export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
 
   return (
     <Card>
-      <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-        Upcoming Tasks
+      <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
+        Upcoming tasks
       </h2>
       <div className="mt-5 space-y-3">
         {pendingTasks.slice(0, 4).map((task) => (
-          <div
-            key={task.id}
-            className="rounded-2xl border border-slate-200 p-4 dark:border-slate-700"
-          >
-            <p className="font-semibold text-slate-900 dark:text-slate-100">
-              {task.title}
-            </p>
+          <div key={task.id} className="rounded-bezel border border-bezel bg-console-raised p-4">
+            <p className="font-semibold text-ink">{task.title}</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Badge tone={task.priority === "high" ? "rose" : "amber"}>
-                {task.priority}
-              </Badge>
+              <Badge tone={task.priority === "high" ? "alert" : "beacon"}>{task.priority}</Badge>
               <Badge>{task.dueDate}</Badge>
             </div>
           </div>

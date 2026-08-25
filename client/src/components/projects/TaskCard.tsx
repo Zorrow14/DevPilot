@@ -5,24 +5,19 @@ type TaskCardProps = {
   task: Task;
 };
 
+const statusTones = { todo: "neutral", "in-progress": "heading", done: "nominal" } as const;
+const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as const;
+
 export function TaskCard({ task }: TaskCardProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 rounded-bezel border border-bezel bg-console-raised p-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="font-semibold text-slate-900 dark:text-slate-100">
-          {task.title}
-        </p>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Due {task.dueDate}
-        </p>
+        <p className="font-semibold text-ink">{task.title}</p>
+        <p className="mt-1 text-sm text-ink-dim">Due {task.dueDate}</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Badge tone={task.status === "done" ? "green" : "indigo"}>
-          {task.status}
-        </Badge>
-        <Badge tone={task.priority === "high" ? "rose" : "amber"}>
-          {task.priority}
-        </Badge>
+        <Badge tone={statusTones[task.status]}>{task.status}</Badge>
+        <Badge tone={priorityTones[task.priority]}>{task.priority}</Badge>
       </div>
     </div>
   );

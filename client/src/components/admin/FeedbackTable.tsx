@@ -6,39 +6,44 @@ type FeedbackTableProps = {
   feedback: Feedback[];
 };
 
+const statusTones = { open: "beacon", reviewed: "heading", closed: "nominal" } as const;
+
 export function FeedbackTable({ feedback }: FeedbackTableProps) {
   return (
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="text-slate-500 dark:text-slate-400">
-            <tr className="border-b border-slate-200 dark:border-slate-700">
-              <th className="py-3 pr-4 font-semibold">User</th>
-              <th className="py-3 pr-4 font-semibold">Category</th>
-              <th className="py-3 pr-4 font-semibold">Message</th>
-              <th className="py-3 pr-4 font-semibold">Status</th>
-              <th className="py-3 pr-4 font-semibold">Date</th>
+          <thead>
+            <tr className="border-b border-bezel">
+              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+                User
+              </th>
+              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+                Category
+              </th>
+              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+                Message
+              </th>
+              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+                Status
+              </th>
+              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+                Date
+              </th>
             </tr>
           </thead>
           <tbody>
             {feedback.map((item) => (
-              <tr
-                key={item.id}
-                className="border-b border-slate-100 last:border-0 dark:border-slate-700"
-              >
-                <td className="py-4 pr-4 font-semibold text-slate-900 dark:text-slate-100">
-                  {item.userName}
-                </td>
+              <tr key={item.id} className="border-b border-bezel last:border-0">
+                <td className="py-4 pr-4 font-semibold text-ink">{item.userName}</td>
                 <td className="py-4 pr-4">
                   <Badge>{item.category}</Badge>
                 </td>
-                <td className="py-4 pr-4">{item.message}</td>
+                <td className="py-4 pr-4 text-ink-dim">{item.message}</td>
                 <td className="py-4 pr-4">
-                  <Badge tone={item.status === "open" ? "amber" : "green"}>
-                    {item.status}
-                  </Badge>
+                  <Badge tone={statusTones[item.status]}>{item.status}</Badge>
                 </td>
-                <td className="py-4 pr-4">{item.createdAt}</td>
+                <td className="py-4 pr-4 text-ink-dim">{item.createdAt}</td>
               </tr>
             ))}
           </tbody>

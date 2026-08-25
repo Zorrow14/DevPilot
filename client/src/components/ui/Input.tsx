@@ -19,7 +19,7 @@ export function Input({
   ...props
 }: InputProps) {
   const fieldClassName = cn(
-    "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-500 dark:border-slate-700 dark:bg-slate-900",
+    "mt-2 w-full rounded-bezel border border-paper-line bg-paper px-4 py-3 text-sm text-paper-ink outline-none placeholder:text-paper-ink/50 focus-visible:border-beacon",
     !label && "mt-0",
     className,
   );
@@ -51,7 +51,7 @@ export function Input({
 
   return (
     <label className="block">
-      <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+      <span className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
         {label}
       </span>
       {field}
