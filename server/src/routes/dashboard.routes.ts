@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { prisma } from "../lib/prisma";
+import { calculateReadinessScore } from "../utils/calculateReadinessScore";
 import {
   mockAnnouncements,
   mockRoadmaps,
@@ -27,7 +28,8 @@ router.get("/stats", async (req, res, next) => {
       return;
     }
 
-    const [skills, projects, tasks] = await Promise.all([
+    const [account, skills, projects, tasks] = await Promise.all([
+      prisma.user.findUniqueOrThrow({ where: { id: req.user.dbUserId } }),
       prisma.skill.findMany({
         where: { userId: req.user.dbUserId },
         orderBy: { createdAt: "desc" },
@@ -46,19 +48,22 @@ router.get("/stats", async (req, res, next) => {
       }),
     ]);
 
+    const readiness = calculateReadinessScore({ skills, projects, tasks });
+
     res.json({
       user: {
-        id: req.user.dbUserId,
-        firebaseUid: req.user.firebaseUid,
-        email: req.user.email,
-        name: req.user.name ?? req.user.email,
-        imageUrl: req.user.picture,
-        role: req.user.role.toLowerCase(),
-        status: req.user.status.toLowerCase(),
-        targetRole: "Frontend Developer Intern",
-        preferredStack: [],
-        readinessScore: 0,
+        id: account.id,
+        firebaseUid: account.firebaseUid,
+        email: account.email,
+        name: account.name,
+        imageUrl: account.imageUrl,
+        role: account.role.toLowerCase(),
+        status: account.status.toLowerCase(),
+        targetRole: account.targetRole ?? "",
+        preferredStack: account.preferredStack,
+        readinessScore: readiness.overall,
       },
+      readiness,
       skills: skills.map((skill) => ({
         ...skill,
         level: formatSkill(skill.level),

@@ -24,7 +24,9 @@ export type Project = {
   id: string;
   title: string;
   description: string;
-  status: "planned" | "in-progress" | "completed";
+  // Mirrors the server's formatProject output: the Prisma ProjectStatus enum
+  // lowercased with underscores swapped for hyphens (PLANNING -> "planning").
+  status: "planning" | "in-progress" | "completed";
   priority: "low" | "medium" | "high";
   deadline: string;
   progress: number;

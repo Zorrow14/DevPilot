@@ -7,7 +7,7 @@ type AdminProjectTableProps = {
   projects: Project[];
 };
 
-const statusTones = { planned: "neutral", "in-progress": "heading", completed: "nominal" } as const;
+const statusTones = { planning: "neutral", "in-progress": "heading", completed: "nominal" } as const;
 const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as const;
 
 export function AdminProjectTable({ projects }: AdminProjectTableProps) {
@@ -17,19 +17,19 @@ export function AdminProjectTable({ projects }: AdminProjectTableProps) {
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-bezel">
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Project
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Status
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Priority
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Deadline
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Progress
               </th>
             </tr>

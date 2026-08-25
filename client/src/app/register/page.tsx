@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithPopup,
+  signOut,
   updateProfile,
 } from "firebase/auth";
 
@@ -41,6 +42,12 @@ export default function RegisterPage() {
       }
 
       await sendEmailVerification(credential.user);
+
+      // createUserWithEmailAndPassword signs the account in immediately. The login
+      // page refuses unverified accounts, so sign back out to match it rather than
+      // leaving the user silently authenticated behind the "check your email" notice.
+      await signOut(auth);
+
       setMessage("Account created successfully. Please check your email to verify your account.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to create account.");

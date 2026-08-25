@@ -1,13 +1,15 @@
 import { Badge } from "@/src/components/ui/Badge";
 import { Card } from "@/src/components/ui/Card";
 import { EmptyState } from "@/src/components/ui/EmptyState";
+import { cn } from "@/src/lib/utils";
 import type { Task } from "@/src/types";
 
 type UpcomingTasksProps = {
   tasks: Task[];
+  className?: string;
 };
 
-export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
+export function UpcomingTasks({ tasks, className }: UpcomingTasksProps) {
   const pendingTasks = tasks.filter((task) => !task.completed);
 
   if (pendingTasks.length === 0) {
@@ -15,12 +17,13 @@ export function UpcomingTasks({ tasks }: UpcomingTasksProps) {
       <EmptyState
         title="No upcoming tasks"
         description="Your next portfolio tasks will appear here."
+        className={className}
       />
     );
   }
 
   return (
-    <Card>
+    <Card className={cn("h-full", className)}>
       <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
         Upcoming tasks
       </h2>

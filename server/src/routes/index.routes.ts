@@ -8,6 +8,7 @@ import projectRoutes from "./project.routes";
 import roadmapRoutes from "./roadmap.routes";
 import skillRoutes from "./skill.routes";
 import taskRoutes from "./task.routes";
+import userRoutes from "./user.routes";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -19,6 +20,7 @@ router.get("/health", (_req, res) => {
 });
 
 router.use("/auth", authRoutes);
+router.use("/users", authMiddleware, userRoutes);
 router.use("/dashboard", authMiddleware, dashboardRoutes);
 router.use("/skills", authMiddleware, skillRoutes);
 router.use("/projects", authMiddleware, projectRoutes);

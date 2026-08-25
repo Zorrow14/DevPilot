@@ -1,6 +1,10 @@
-// Express user routes will be defined here.
+import { Router } from "express";
 
-export const userRoutes = {
-  basePath: "/api/users",
-  plannedEndpoints: ["GET /", "GET /:id", "PATCH /:id"],
-};
+import { getMe, updateMe } from "../controllers/user.controller";
+
+const router = Router();
+
+router.get("/me", getMe);
+router.patch("/me", updateMe);
+
+export default router;

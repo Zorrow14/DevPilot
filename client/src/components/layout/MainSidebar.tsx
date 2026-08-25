@@ -22,7 +22,7 @@ export function MainSidebar() {
     <aside className="border-b border-bezel bg-console px-5 py-4 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:py-6">
       <Link href={routes.home} className="block">
         <p className="font-display text-lg font-bold text-ink">DevPilot</p>
-        <p className="mt-1 font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+        <p className="mt-1 font-display text-micro uppercase tracking-wider text-ink-dim">
           Growth workspace
         </p>
       </Link>

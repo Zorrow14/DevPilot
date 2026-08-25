@@ -1,18 +1,41 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+
 import { Badge } from "@/src/components/ui/Badge";
+import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
+import { api } from "@/src/lib/api";
 import type { Project } from "@/src/types";
 
 type ProjectCardProps = {
   project: Project;
+  onChanged: () => void;
 };
 
-const statusTones = { planned: "neutral", "in-progress": "heading", completed: "nominal" } as const;
+const statusTones = { planning: "neutral", "in-progress": "heading", completed: "nominal" } as const;
 const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as const;
-const progressTones = { planned: "beacon", "in-progress": "heading", completed: "nominal" } as const;
+const progressTones = { planning: "beacon", "in-progress": "heading", completed: "nominal" } as const;
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, onChanged }: ProjectCardProps) {
+  const [isBusy, setIsBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleDelete() {
+    setError(null);
+    setIsBusy(true);
+
+    try {
+      await api.deleteProject(project.id);
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to delete project.");
+      setIsBusy(false);
+    }
+  }
+
   return (
     <Card>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -42,6 +65,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
         {project.techStack.map((tech) => (
           <Badge key={tech}>{tech}</Badge>
         ))}
+      </div>
+
+      {error ? <p className="mt-3 text-sm text-alert">{error}</p> : null}
+
+      <div className="mt-5 flex justify-end gap-1 border-t border-bezel pt-3">
+        <Button variant="ghost" href={`/projects/${project.id}`}>
+          Open
+        </Button>
+        <Button variant="ghost" onClick={handleDelete} disabled={isBusy}>
+          {isBusy ? "Removing..." : "Remove"}
+        </Button>
       </div>
     </Card>
   );

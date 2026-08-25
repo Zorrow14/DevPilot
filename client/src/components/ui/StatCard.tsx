@@ -6,6 +6,7 @@ type StatCardProps = {
   value: string | number;
   helper?: string;
   tone?: "beacon" | "heading" | "nominal" | "alert";
+  className?: string;
 };
 
 const accents = {
@@ -15,15 +16,16 @@ const accents = {
   alert: "before:bg-alert",
 };
 
-export function StatCard({ label, value, helper, tone = "beacon" }: StatCardProps) {
+export function StatCard({ label, value, helper, tone = "beacon", className }: StatCardProps) {
   return (
     <Card
       className={cn(
         "relative overflow-hidden pl-6 before:absolute before:left-0 before:top-0 before:h-full before:w-1",
         accents[tone],
+        className,
       )}
     >
-      <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+      <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
         {label}
       </p>
       <p className="mt-3 font-display text-3xl font-bold text-ink">{value}</p>

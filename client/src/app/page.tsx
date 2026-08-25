@@ -57,7 +57,7 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-16">
         <div>
-          <p className="mb-4 flex w-fit items-center gap-2 rounded-bezel border border-bezel-bright bg-console px-3 py-1.5 font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+          <p className="mb-4 flex w-fit items-center gap-2 rounded-bezel border border-bezel-bright bg-console px-3 py-1.5 font-display text-micro uppercase tracking-wider text-ink-dim">
             <span className="h-1.5 w-1.5 rounded-full bg-nominal" />
             Skills &middot; Projects &middot; Roadmap &middot; Readiness
           </p>
@@ -81,7 +81,7 @@ export default function HomePage() {
 
         <Card>
           <div className="flex items-center justify-between border-b border-bezel pb-4">
-            <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+            <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
               Readiness instrument
             </p>
             <p className="text-sm text-ink-dim">{mockUser.targetRole}</p>
@@ -91,13 +91,13 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 gap-3 border-t border-bezel pt-5">
             <div>
-              <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+              <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
                 Skills tracked
               </p>
               <p className="mt-1 font-display text-2xl font-bold text-ink">{mockSkills.length}</p>
             </div>
             <div>
-              <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+              <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
                 Open tasks
               </p>
               <p className="mt-1 font-display text-2xl font-bold text-ink">{openTasks}</p>
@@ -128,7 +128,7 @@ export default function HomePage() {
       </section>
 
       <footer className="border-t border-bezel px-6 py-6 text-center">
-        <p className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-faint">
+        <p className="font-display text-micro uppercase tracking-wider text-ink-faint">
           DevPilot — growth instrumentation for developers
         </p>
       </footer>

@@ -1,7 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: var(--font-mono), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* Drop Tailwind's stock palette so only cockpit tokens are spendable — a stray
+     bg-slate-800 now fails to compile instead of quietly forking the system. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentcolor;
+
+  --font-display: var(--font-jetbrains), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
   --font-sans: var(--font-grotesk), "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   /* Cockpit surfaces */
@@ -32,7 +38,12 @@
   --color-alert-dim: #632f2a;
 
   --radius-bezel: 4px;
-  --radius-dial: 10px;
+
+  /* The uppercase instrument-label size, used on ~30 elements. */
+  --text-micro: 0.6875rem;
+
+  /* Light-from-above hairline that separates a raised surface from its border. */
+  --shadow-raised: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
 }
 
 :root {

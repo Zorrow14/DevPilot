@@ -51,7 +51,7 @@ export function Input({
 
   return (
     <label className="block">
-      <span className="font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+      <span className="font-display text-micro uppercase tracking-wider text-ink-dim">
         {label}
       </span>
       {field}

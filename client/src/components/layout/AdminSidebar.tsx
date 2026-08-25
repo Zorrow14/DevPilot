@@ -26,7 +26,7 @@ export function AdminSidebar() {
         <p className="font-display text-lg font-bold text-ink">DevPilot</p>
         <Badge tone="beacon">Admin</Badge>
       </Link>
-      <p className="mt-1 font-display text-[0.6875rem] uppercase tracking-wider text-ink-dim">
+      <p className="mt-1 font-display text-micro uppercase tracking-wider text-ink-dim">
         Platform monitoring
       </p>
       <nav className="mt-6 flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">

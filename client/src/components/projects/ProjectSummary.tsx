@@ -7,9 +7,9 @@ type ProjectSummaryProps = {
   project: Project;
 };
 
-const statusTones = { planned: "neutral", "in-progress": "heading", completed: "nominal" } as const;
+const statusTones = { planning: "neutral", "in-progress": "heading", completed: "nominal" } as const;
 const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as const;
-const progressTones = { planned: "beacon", "in-progress": "heading", completed: "nominal" } as const;
+const progressTones = { planning: "beacon", "in-progress": "heading", completed: "nominal" } as const;
 
 export function ProjectSummary({ project }: ProjectSummaryProps) {
   const statusTone = statusTones[project.status];

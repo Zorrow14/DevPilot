@@ -77,7 +77,7 @@ export const mockProjects: Project[] = [
     id: "project-2",
     title: "Task Planner API",
     description: "A backend practice project for CRUD routes, validation, and auth guards.",
-    status: "planned",
+    status: "planning",
     priority: "medium",
     deadline: "2026-07-22",
     progress: 28,

@@ -15,19 +15,19 @@ export function FeedbackTable({ feedback }: FeedbackTableProps) {
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-bezel">
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 User
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Category
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Message
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Status
               </th>
-              <th className="py-3 pr-4 font-display text-[0.6875rem] font-bold uppercase tracking-wider text-ink-dim">
+              <th className="py-3 pr-4 font-display text-micro font-bold uppercase tracking-wider text-ink-dim">
                 Date
               </th>
             </tr>

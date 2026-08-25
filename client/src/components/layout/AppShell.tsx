@@ -1,3 +1,4 @@
+import { RequireAuth } from "@/src/components/auth/RequireAuth";
 import { MainSidebar } from "./MainSidebar";
 import { PageHeader } from "./PageHeader";
 import { TopBar } from "./TopBar";
@@ -11,17 +12,19 @@ type AppShellProps = {
 
 export function AppShell({ children, title, description, action }: AppShellProps) {
   return (
-    <main className="min-h-screen bg-panel text-ink">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[260px_1fr]">
-        <MainSidebar />
-        <section className="w-full px-5 py-6 sm:px-8 lg:px-10">
-          <div className="mx-auto max-w-7xl">
-            <TopBar />
-            <PageHeader title={title} description={description} action={action} />
-            {children}
-          </div>
-        </section>
-      </div>
-    </main>
+    <RequireAuth>
+      <main className="min-h-screen bg-panel text-ink">
+        <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[260px_1fr]">
+          <MainSidebar />
+          <section className="w-full px-5 py-6 sm:px-8 lg:px-10">
+            <div className="mx-auto max-w-7xl">
+              <TopBar />
+              <PageHeader title={title} description={description} action={action} />
+              {children}
+            </div>
+          </section>
+        </div>
+      </main>
+    </RequireAuth>
   );
 }

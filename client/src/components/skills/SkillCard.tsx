@@ -1,10 +1,17 @@
+"use client";
+
+import { useState } from "react";
+
 import { Badge } from "@/src/components/ui/Badge";
+import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
+import { api } from "@/src/lib/api";
 import type { Skill } from "@/src/types";
 
 type SkillCardProps = {
   skill: Skill;
+  onChanged: () => void;
 };
 
 const levelTones = {
@@ -13,8 +20,23 @@ const levelTones = {
   advanced: "nominal",
 } as const;
 
-export function SkillCard({ skill }: SkillCardProps) {
+export function SkillCard({ skill, onChanged }: SkillCardProps) {
   const tone = levelTones[skill.level];
+  const [isBusy, setIsBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleDelete() {
+    setError(null);
+    setIsBusy(true);
+
+    try {
+      await api.deleteSkill(skill.id);
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to delete skill.");
+      setIsBusy(false);
+    }
+  }
 
   return (
     <Card>
@@ -27,12 +49,18 @@ export function SkillCard({ skill }: SkillCardProps) {
       </div>
       <div className="mt-5 flex items-center justify-between">
         <Badge tone={tone}>{skill.level}</Badge>
-        <span className="font-display text-sm font-semibold text-ink-dim">
-          {skill.progress}%
-        </span>
+        <span className="font-display text-sm font-semibold text-ink-dim">{skill.progress}%</span>
       </div>
       <div className="mt-4">
         <ProgressBar value={skill.progress} tone={tone} />
+      </div>
+
+      {error ? <p className="mt-3 text-sm text-alert">{error}</p> : null}
+
+      <div className="mt-4 flex justify-end border-t border-bezel pt-3">
+        <Button variant="ghost" onClick={handleDelete} disabled={isBusy}>
+          {isBusy ? "Removing..." : "Remove"}
+        </Button>
       </div>
     </Card>
   );

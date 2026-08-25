@@ -1,49 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 import { AppShell } from "@/src/components/layout/AppShell";
 import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { EmptyState } from "@/src/components/ui/EmptyState";
 import { ProjectSummary } from "@/src/components/projects/ProjectSummary";
+import { TaskForm } from "@/src/components/projects/TaskForm";
 import { TaskList } from "@/src/components/projects/TaskList";
+import { useApiResource } from "@/src/hooks/useApiResource";
 import { api } from "@/src/lib/api";
-import type { Project, Task } from "@/src/types";
 
 export default function ProjectDetailsPage() {
   const params = useParams<{ id: string }>();
-  const [project, setProject] = useState<Project | null>(null);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
 
-  useEffect(() => {
-    async function loadProjectDetails() {
-      try {
-        const [projectData, taskData] = await Promise.all([
-          api.getProject(params.id),
-          api.getProjectTasks(params.id),
-        ]);
+  const { data, error, isLoading, reload } = useApiResource(
+    (signal) =>
+      Promise.all([api.getProject(params.id, signal), api.getProjectTasks(params.id, signal)]),
+    params.id,
+  );
 
-        setProject(projectData);
-        setTasks(taskData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to load project details.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    void loadProjectDetails();
-  }, [params.id]);
+  const project = data?.[0] ?? null;
+  const tasks = data?.[1] ?? [];
 
   return (
     <AppShell
       title={project?.title ?? "Project Details"}
-      description="Static project details view using backend mock data."
-      action={<Button href="#">Add Task</Button>}
+      description="Project details, tasks, and progress for this build."
+      action={
+        project ? (
+          <Button onClick={() => setIsAdding((value) => !value)}>
+            {isAdding ? "Close" : "Add Task"}
+          </Button>
+        ) : undefined
+      }
     >
       {isLoading ? (
         <Card>Loading project details...</Card>
@@ -52,7 +45,19 @@ export default function ProjectDetailsPage() {
       ) : project ? (
         <>
           <ProjectSummary project={project} />
-          <TaskList tasks={tasks} />
+
+          {isAdding ? (
+            <TaskForm
+              projectId={project.id}
+              onSaved={() => {
+                setIsAdding(false);
+                reload();
+              }}
+              onCancel={() => setIsAdding(false)}
+            />
+          ) : null}
+
+          <TaskList tasks={tasks} onChanged={reload} />
         </>
       ) : null}
     </AppShell>

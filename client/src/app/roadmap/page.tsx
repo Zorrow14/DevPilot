@@ -1,42 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { AppShell } from "@/src/components/layout/AppShell";
 import { RoadmapForm } from "@/src/components/roadmap/RoadmapForm";
 import { RoadmapHistory } from "@/src/components/roadmap/RoadmapHistory";
 import { RoadmapTimeline } from "@/src/components/roadmap/RoadmapTimeline";
 import { Card } from "@/src/components/ui/Card";
 import { EmptyState } from "@/src/components/ui/EmptyState";
+import { useApiResource } from "@/src/hooks/useApiResource";
 import { api } from "@/src/lib/api";
-import type { Roadmap, Skill } from "@/src/types";
 
 export default function RoadmapPage() {
-  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
-  const [skills, setSkills] = useState<Skill[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, error, isLoading } = useApiResource((signal) =>
+    Promise.all([api.getRoadmaps(signal), api.getSkills(signal)]),
+  );
 
-  useEffect(() => {
-    async function loadRoadmapData() {
-      try {
-        const [roadmapData, skillData] = await Promise.all([
-          api.getRoadmaps(),
-          api.getSkills(),
-        ]);
-
-        setRoadmaps(roadmapData);
-        setSkills(skillData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to load roadmap data.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    void loadRoadmapData();
-  }, []);
-
+  const roadmaps = data?.[0] ?? [];
+  const skills = data?.[1] ?? [];
   const roadmap = roadmaps[0];
 
   return (

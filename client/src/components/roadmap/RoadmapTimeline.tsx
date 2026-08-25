@@ -24,7 +24,7 @@ export function RoadmapTimeline({ roadmap }: RoadmapTimelineProps) {
     <Card>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="font-display text-[0.6875rem] uppercase tracking-wider text-beacon">
+          <p className="font-display text-micro uppercase tracking-wider text-beacon">
             Mock generated roadmap
           </p>
           <h2 className="mt-2 text-xl font-bold text-ink">{roadmap.title}</h2>

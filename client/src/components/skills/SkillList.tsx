@@ -4,14 +4,16 @@ import { SkillCard } from "./SkillCard";
 
 type SkillListProps = {
   skills: Skill[];
+  onChanged: () => void;
+  emptyDescription?: string;
 };
 
-export function SkillList({ skills }: SkillListProps) {
+export function SkillList({ skills, onChanged, emptyDescription }: SkillListProps) {
   if (skills.length === 0) {
     return (
       <EmptyState
         title="No skills yet"
-        description="Add your first skill when the form becomes active."
+        description={emptyDescription ?? "Use Add Skill to start tracking what you're learning."}
       />
     );
   }
@@ -19,7 +21,7 @@ export function SkillList({ skills }: SkillListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {skills.map((skill) => (
-        <SkillCard key={skill.id} skill={skill} />
+        <SkillCard key={skill.id} skill={skill} onChanged={onChanged} />
       ))}
     </div>
   );

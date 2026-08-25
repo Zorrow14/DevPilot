@@ -1,15 +1,17 @@
 import { Badge } from "@/src/components/ui/Badge";
 import { Card } from "@/src/components/ui/Card";
+import { cn } from "@/src/lib/utils";
 import type { Roadmap } from "@/src/types";
 
 type RecentRoadmapsProps = {
   roadmap: Roadmap;
+  className?: string;
 };
 
-export function RecentRoadmaps({ roadmap }: RecentRoadmapsProps) {
+export function RecentRoadmaps({ roadmap, className }: RecentRoadmapsProps) {
   return (
-    <Card>
-      <p className="font-display text-[0.6875rem] uppercase tracking-wider text-heading">
+    <Card className={cn("h-full", className)}>
+      <p className="font-display text-micro uppercase tracking-wider text-heading">
         Recent roadmap
       </p>
       <h2 className="mt-2 text-lg font-bold text-ink">{roadmap.title}</h2>
