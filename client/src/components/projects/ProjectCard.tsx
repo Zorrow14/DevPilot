@@ -9,6 +9,7 @@ import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { api } from "@/src/lib/api";
 import type { Project } from "@/src/types";
+import { ProjectEditForm } from "./ProjectEditForm";
 
 type ProjectCardProps = {
   project: Project;
@@ -21,6 +22,7 @@ const progressTones = { planning: "beacon", "in-progress": "heading", completed:
 
 export function ProjectCard({ project, onChanged }: ProjectCardProps) {
   const [isBusy, setIsBusy] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
@@ -34,6 +36,19 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
       setError(err instanceof Error ? err.message : "Unable to delete project.");
       setIsBusy(false);
     }
+  }
+
+  if (isEditing) {
+    return (
+      <ProjectEditForm
+        project={project}
+        onSaved={() => {
+          setIsEditing(false);
+          onChanged();
+        }}
+        onCancel={() => setIsEditing(false)}
+      />
+    );
   }
 
   return (
@@ -72,6 +87,9 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
       <div className="mt-5 flex justify-end gap-1 border-t border-bezel pt-3">
         <Button variant="ghost" href={`/projects/${project.id}`}>
           Open
+        </Button>
+        <Button variant="ghost" onClick={() => setIsEditing(true)} disabled={isBusy}>
+          Edit
         </Button>
         <Button variant="ghost" onClick={handleDelete} disabled={isBusy}>
           {isBusy ? "Removing..." : "Remove"}

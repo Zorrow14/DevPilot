@@ -6,6 +6,7 @@ import { Badge } from "@/src/components/ui/Badge";
 import { Button } from "@/src/components/ui/Button";
 import { api } from "@/src/lib/api";
 import type { Task } from "@/src/types";
+import { TaskEditForm } from "./TaskEditForm";
 
 type TaskCardProps = {
   task: Task;
@@ -17,6 +18,7 @@ const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as con
 
 export function TaskCard({ task, onChanged }: TaskCardProps) {
   const [isBusy, setIsBusy] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function run(action: () => Promise<unknown>, failure: string) {
@@ -32,13 +34,33 @@ export function TaskCard({ task, onChanged }: TaskCardProps) {
     }
   }
 
+  if (isEditing) {
+    return (
+      <TaskEditForm
+        task={task}
+        onSaved={() => {
+          setIsEditing(false);
+          onChanged();
+        }}
+        onCancel={() => setIsEditing(false)}
+      />
+    );
+  }
+
   return (
     <div className="rounded-bezel border border-bezel bg-console-raised p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className={task.completed ? "font-semibold text-ink-dim line-through" : "font-semibold text-ink"}>
+          <p
+            className={
+              task.completed ? "font-semibold text-ink-dim line-through" : "font-semibold text-ink"
+            }
+          >
             {task.title}
           </p>
+          {task.description ? (
+            <p className="mt-1 text-sm leading-6 text-ink-dim">{task.description}</p>
+          ) : null}
           {task.dueDate ? <p className="mt-1 text-sm text-ink-dim">Due {task.dueDate}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -61,6 +83,9 @@ export function TaskCard({ task, onChanged }: TaskCardProps) {
           }
         >
           {task.completed ? "Reopen" : "Mark done"}
+        </Button>
+        <Button variant="ghost" disabled={isBusy} onClick={() => setIsEditing(true)}>
+          Edit
         </Button>
         <Button
           variant="ghost"

@@ -15,6 +15,8 @@ type TaskFormProps = {
 
 export function TaskForm({ projectId, onSaved, onCancel }: TaskFormProps) {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState("todo");
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,8 @@ export function TaskForm({ projectId, onSaved, onCancel }: TaskFormProps) {
     try {
       await api.createProjectTask(projectId, {
         title,
+        description: description || null,
+        status,
         priority,
         dueDate: dueDate || null,
       });
@@ -60,7 +64,26 @@ export function TaskForm({ projectId, onSaved, onCancel }: TaskFormProps) {
           required
         />
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <Input
+          label="Details"
+          as="textarea"
+          rows={2}
+          placeholder="Anything worth remembering about this step"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <Input
+            label="Status"
+            as="select"
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+          >
+            <option value="todo">To do</option>
+            <option value="in-progress">In progress</option>
+            <option value="done">Done</option>
+          </Input>
           <Input
             label="Priority"
             as="select"

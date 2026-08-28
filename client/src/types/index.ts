@@ -17,7 +17,9 @@ export type Skill = {
   category: string;
   level: "beginner" | "intermediate" | "advanced";
   progress: number;
+  /** Empty string when the skill has never been practised. */
   lastPracticed: string;
+  notes: string | null;
 };
 
 export type Project = {
@@ -37,6 +39,8 @@ export type Task = {
   id: string;
   projectId: string;
   title: string;
+  /** Serialized as "" rather than null by the server's formatTask. */
+  description: string;
   status: "todo" | "in-progress" | "done";
   priority: "low" | "medium" | "high";
   dueDate: string;

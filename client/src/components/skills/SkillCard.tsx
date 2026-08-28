@@ -9,6 +9,7 @@ import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { api } from "@/src/lib/api";
 import { formatRelativeDate } from "@/src/lib/dates";
 import type { Skill } from "@/src/types";
+import { SkillEditForm } from "./SkillEditForm";
 
 type SkillCardProps = {
   skill: Skill;
@@ -25,6 +26,7 @@ export function SkillCard({ skill, onChanged }: SkillCardProps) {
   const tone = levelTones[skill.level];
   const practiced = formatRelativeDate(skill.lastPracticed);
   const [isBusy, setIsBusy] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleDelete() {
@@ -38,6 +40,19 @@ export function SkillCard({ skill, onChanged }: SkillCardProps) {
       setError(err instanceof Error ? err.message : "Unable to delete skill.");
       setIsBusy(false);
     }
+  }
+
+  if (isEditing) {
+    return (
+      <SkillEditForm
+        skill={skill}
+        onSaved={() => {
+          setIsEditing(false);
+          onChanged();
+        }}
+        onCancel={() => setIsEditing(false)}
+      />
+    );
   }
 
   return (
@@ -61,7 +76,10 @@ export function SkillCard({ skill, onChanged }: SkillCardProps) {
 
       {error ? <p className="mt-3 text-sm text-alert">{error}</p> : null}
 
-      <div className="mt-4 flex justify-end border-t border-bezel pt-3">
+      <div className="mt-4 flex justify-end gap-1 border-t border-bezel pt-3">
+        <Button variant="ghost" onClick={() => setIsEditing(true)} disabled={isBusy}>
+          Edit
+        </Button>
         <Button variant="ghost" onClick={handleDelete} disabled={isBusy}>
           {isBusy ? "Removing..." : "Remove"}
         </Button>

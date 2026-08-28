@@ -24,6 +24,7 @@ export const mockSkills: Skill[] = [
     level: "intermediate",
     progress: 78,
     lastPracticed: "Today",
+    notes: null,
   },
   {
     id: "skill-2",
@@ -32,6 +33,7 @@ export const mockSkills: Skill[] = [
     level: "intermediate",
     progress: 64,
     lastPracticed: "Yesterday",
+    notes: null,
   },
   {
     id: "skill-3",
@@ -40,6 +42,7 @@ export const mockSkills: Skill[] = [
     level: "beginner",
     progress: 42,
     lastPracticed: "3 days ago",
+    notes: null,
   },
   {
     id: "skill-4",
@@ -48,6 +51,7 @@ export const mockSkills: Skill[] = [
     level: "beginner",
     progress: 36,
     lastPracticed: "1 week ago",
+    notes: null,
   },
   {
     id: "skill-5",
@@ -56,6 +60,7 @@ export const mockSkills: Skill[] = [
     level: "advanced",
     progress: 86,
     lastPracticed: "Today",
+    notes: null,
   },
 ];
 
@@ -96,6 +101,7 @@ export const mockTasks: Task[] = [
   {
     id: "task-1",
     projectId: "project-1",
+    description: "",
     title: "Write portfolio hero copy",
     status: "done",
     priority: "medium",
@@ -105,6 +111,7 @@ export const mockTasks: Task[] = [
   {
     id: "task-2",
     projectId: "project-1",
+    description: "",
     title: "Add project case study cards",
     status: "in-progress",
     priority: "high",
@@ -114,6 +121,7 @@ export const mockTasks: Task[] = [
   {
     id: "task-3",
     projectId: "project-2",
+    description: "",
     title: "Draft route list",
     status: "todo",
     priority: "medium",
@@ -123,6 +131,7 @@ export const mockTasks: Task[] = [
   {
     id: "task-4",
     projectId: "project-3",
+    description: "",
     title: "Design dashboard stat cards",
     status: "todo",
     priority: "low",
