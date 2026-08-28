@@ -1,6 +1,7 @@
 import type { DecodedIdToken } from "firebase-admin/auth";
 
 import { prisma } from "../lib/prisma";
+import { ValidationError } from "../utils/errors";
 
 export type FirebaseUserInfo = {
   firebaseUid: string;
@@ -20,7 +21,7 @@ export function getFirebaseUserInfo(decodedToken: DecodedIdToken): FirebaseUserI
 
 export async function syncFirebaseUser(firebaseUser: FirebaseUserInfo) {
   if (!firebaseUser.email) {
-    throw new Error("Firebase user email is required.");
+    throw new ValidationError("Firebase user email is required.");
   }
 
   return prisma.user.upsert({

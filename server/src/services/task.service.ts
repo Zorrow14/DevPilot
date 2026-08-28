@@ -1,6 +1,7 @@
 import type { Priority, Task, TaskStatus } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export type TaskPayload = {
   title?: string;
@@ -33,7 +34,7 @@ function normalizeTaskStatus(status?: string): TaskStatus | undefined {
     normalizedStatus !== "IN_PROGRESS" &&
     normalizedStatus !== "COMPLETED"
   ) {
-    throw new Error("Task status must be TODO, IN_PROGRESS, or COMPLETED.");
+    throw new ValidationError("Task status must be TODO, IN_PROGRESS, or COMPLETED.");
   }
 
   return normalizedStatus;
@@ -51,7 +52,7 @@ function normalizePriority(priority?: string): Priority | undefined {
     normalizedPriority !== "MEDIUM" &&
     normalizedPriority !== "HIGH"
   ) {
-    throw new Error("Priority must be LOW, MEDIUM, or HIGH.");
+    throw new ValidationError("Priority must be LOW, MEDIUM, or HIGH.");
   }
 
   return normalizedPriority;
@@ -69,7 +70,7 @@ function normalizeDueDate(dueDate?: string | null): Date | null | undefined {
   const date = new Date(dueDate);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Task due date must be a valid date.");
+    throw new ValidationError("Task due date must be a valid date.");
   }
 
   return date;
@@ -84,7 +85,7 @@ async function findOwnedProject(userId: string, projectId: string) {
   });
 
   if (!project) {
-    throw new Error("Project not found.");
+    throw new NotFoundError("Project");
   }
 
   return project;
@@ -101,7 +102,7 @@ async function findOwnedTask(userId: string, taskId: string) {
   });
 
   if (!task) {
-    throw new Error("Task not found.");
+    throw new NotFoundError("Task");
   }
 
   return task;
@@ -128,7 +129,7 @@ export async function createTask(
   payload: TaskPayload,
 ) {
   if (!payload.title) {
-    throw new Error("Task title is required.");
+    throw new ValidationError("Task title is required.");
   }
 
   await findOwnedProject(userId, projectId);

@@ -1,6 +1,7 @@
 import type { Skill, SkillLevel } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export type SkillPayload = {
   name?: string;
@@ -30,7 +31,7 @@ function normalizeSkillLevel(level?: string): SkillLevel | undefined {
     normalizedLevel !== "INTERMEDIATE" &&
     normalizedLevel !== "ADVANCED"
   ) {
-    throw new Error("Skill level must be BEGINNER, INTERMEDIATE, or ADVANCED.");
+    throw new ValidationError("Skill level must be BEGINNER, INTERMEDIATE, or ADVANCED.");
   }
 
   return normalizedLevel;
@@ -42,7 +43,7 @@ function normalizeProgress(progress?: number): number | undefined {
   }
 
   if (!Number.isInteger(progress) || progress < 0 || progress > 100) {
-    throw new Error("Skill progress must be an integer between 0 and 100.");
+    throw new ValidationError("Skill progress must be an integer between 0 and 100.");
   }
 
   return progress;
@@ -57,7 +58,7 @@ async function findOwnedSkill(skillId: string, userId: string) {
   });
 
   if (!skill) {
-    throw new Error("Skill not found.");
+    throw new NotFoundError("Skill");
   }
 
   return skill;
@@ -78,7 +79,7 @@ export async function getSkills(userId: string) {
 
 export async function createSkill(userId: string, payload: SkillPayload) {
   if (!payload.name || !payload.category) {
-    throw new Error("Skill name and category are required.");
+    throw new ValidationError("Skill name and category are required.");
   }
 
   const skill = await prisma.skill.create({

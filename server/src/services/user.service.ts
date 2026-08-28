@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { ValidationError } from "../utils/errors";
 
 export type UserProfilePayload = {
   name?: string;
@@ -14,7 +15,7 @@ function normalizeName(name?: string) {
   const trimmed = name.trim();
 
   if (!trimmed) {
-    throw new Error("Name is required.");
+    throw new ValidationError("Name is required.");
   }
 
   return trimmed;
@@ -34,7 +35,7 @@ function normalizePreferredStack(preferredStack?: string[]) {
   }
 
   if (!Array.isArray(preferredStack)) {
-    throw new Error("Preferred stack must be a list of strings.");
+    throw new ValidationError("Preferred stack must be a list of strings.");
   }
 
   const cleaned = preferredStack

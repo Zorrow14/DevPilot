@@ -1,6 +1,7 @@
 import type { Priority, Project, ProjectStatus } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export type ProjectPayload = {
   title?: string;
@@ -34,7 +35,7 @@ function normalizeProjectStatus(status?: string): ProjectStatus | undefined {
     normalizedStatus !== "IN_PROGRESS" &&
     normalizedStatus !== "COMPLETED"
   ) {
-    throw new Error("Project status must be PLANNING, IN_PROGRESS, or COMPLETED.");
+    throw new ValidationError("Project status must be PLANNING, IN_PROGRESS, or COMPLETED.");
   }
 
   return normalizedStatus;
@@ -52,7 +53,7 @@ function normalizePriority(priority?: string): Priority | undefined {
     normalizedPriority !== "MEDIUM" &&
     normalizedPriority !== "HIGH"
   ) {
-    throw new Error("Priority must be LOW, MEDIUM, or HIGH.");
+    throw new ValidationError("Priority must be LOW, MEDIUM, or HIGH.");
   }
 
   return normalizedPriority;
@@ -64,7 +65,7 @@ function normalizeProgress(progress?: number): number | undefined {
   }
 
   if (!Number.isInteger(progress) || progress < 0 || progress > 100) {
-    throw new Error("Project progress must be an integer between 0 and 100.");
+    throw new ValidationError("Project progress must be an integer between 0 and 100.");
   }
 
   return progress;
@@ -82,7 +83,7 @@ function normalizeDeadline(deadline?: string | null): Date | null | undefined {
   const date = new Date(deadline);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Project deadline must be a valid date.");
+    throw new ValidationError("Project deadline must be a valid date.");
   }
 
   return date;
@@ -97,7 +98,7 @@ async function findOwnedProject(projectId: string, userId: string) {
   });
 
   if (!project) {
-    throw new Error("Project not found.");
+    throw new NotFoundError("Project");
   }
 
   return project;
@@ -124,7 +125,7 @@ export async function getProject(userId: string, projectId: string) {
 
 export async function createProject(userId: string, payload: ProjectPayload) {
   if (!payload.title) {
-    throw new Error("Project title is required.");
+    throw new ValidationError("Project title is required.");
   }
 
   const project = await prisma.project.create({
