@@ -37,7 +37,7 @@ export function AnnouncementPanel({ announcements }: AnnouncementPanelProps) {
           <Card key={announcement.id}>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="font-bold text-ink">{announcement.title}</h2>
+                <h2 className="letterpress font-bold text-ink">{announcement.title}</h2>
                 <p className="mt-2 text-sm leading-6 text-ink-dim">{announcement.message}</p>
               </div>
               <Badge tone="beacon">{announcement.audience}</Badge>

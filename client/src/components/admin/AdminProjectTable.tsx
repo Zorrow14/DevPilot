@@ -12,7 +12,7 @@ const priorityTones = { low: "neutral", medium: "beacon", high: "alert" } as con
 
 export function AdminProjectTable({ projects }: AdminProjectTableProps) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden" elevation="flat">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>

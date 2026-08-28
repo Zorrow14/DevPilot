@@ -3,8 +3,10 @@ import { ButtonLink } from "@/src/components/ui/ButtonLink";
 import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { ReadinessGauge } from "@/src/components/ui/ReadinessGauge";
+import { Sparkle } from "@/src/components/ui/Sparkle";
 import { mockProjects, mockSkills, mockTasks, mockUser } from "@/src/data/mockData";
 import { routes } from "@/src/constants/routes";
+import { cn } from "@/src/lib/utils";
 
 const modules = [
   {
@@ -117,10 +119,16 @@ export default function HomePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {modules.map((module) => (
             <Card key={module.code}>
-              <p className="font-display text-xs font-bold tracking-wider text-beacon">
+              <p
+                className={cn(
+                  "flex items-center gap-1.5 font-display text-xs font-bold tracking-wider",
+                  module.code === "RDM" ? "text-ai" : "text-beacon",
+                )}
+              >
+                {module.code === "RDM" ? <Sparkle /> : null}
                 {module.code}
               </p>
-              <h2 className="mt-3 text-base font-bold text-ink">{module.title}</h2>
+              <h2 className="letterpress mt-3 text-base font-bold text-ink">{module.title}</h2>
               <p className="mt-2 text-sm leading-6 text-ink-dim">{module.description}</p>
             </Card>
           ))}

@@ -42,7 +42,7 @@ export function ProjectCard({ project, onChanged }: ProjectCardProps) {
         <div>
           <Link
             href={`/projects/${project.id}`}
-            className="text-xl font-bold text-ink hover:text-beacon"
+            className="letterpress text-xl font-bold text-ink hover:text-beacon"
           >
             {project.title}
           </Link>

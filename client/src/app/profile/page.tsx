@@ -47,7 +47,7 @@ export default function ProfilePage() {
               {getInitials(profile.name)}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-ink">{profile.name}</h2>
+              <h2 className="letterpress text-2xl font-bold text-ink">{profile.name}</h2>
               <p className="mt-1 text-ink-dim">{profile.email}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {profile.targetRole ? (

@@ -18,8 +18,10 @@ export function Input({
   className,
   ...props
 }: InputProps) {
+  // Recessed shadow reads as a well carved into the panel — the paper sheet sits
+  // inside it, so the field looks like something you type into, not onto.
   const fieldClassName = cn(
-    "mt-2 w-full rounded-bezel border border-paper-line bg-paper px-4 py-3 text-sm text-paper-ink outline-none placeholder:text-paper-ink/50 focus-visible:border-beacon",
+    "mt-2 w-full rounded-bezel border border-paper-line bg-paper px-4 py-3 text-sm text-paper-ink carved outline-none placeholder:text-paper-ink/50 focus-visible:border-beacon",
     !label && "mt-0",
     className,
   );

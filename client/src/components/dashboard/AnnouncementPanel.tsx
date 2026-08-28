@@ -11,7 +11,7 @@ export function AnnouncementPanel({ announcement, className }: AnnouncementPanel
   return (
     <Card className={cn("h-full", className)}>
       <p className="font-display text-micro uppercase tracking-wider text-beacon">Announcement</p>
-      <h2 className="mt-2 text-lg font-bold text-ink">{announcement.title}</h2>
+      <h2 className="letterpress mt-2 text-lg font-bold text-ink">{announcement.title}</h2>
       <p className="mt-2 text-sm leading-6 text-ink-dim">{announcement.message}</p>
     </Card>
   );

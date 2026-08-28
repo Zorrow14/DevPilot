@@ -8,7 +8,7 @@ type UserTableProps = {
 
 export function UserTable({ users }: UserTableProps) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden" elevation="flat">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>

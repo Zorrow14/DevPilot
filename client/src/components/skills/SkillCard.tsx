@@ -42,7 +42,7 @@ export function SkillCard({ skill, onChanged }: SkillCardProps) {
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-ink">{skill.name}</h2>
+          <h2 className="letterpress text-lg font-bold text-ink">{skill.name}</h2>
           <p className="mt-1 text-sm text-ink-dim">Practiced {skill.lastPracticed}</p>
         </div>
         <Badge>{skill.category}</Badge>

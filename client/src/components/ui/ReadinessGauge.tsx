@@ -21,13 +21,18 @@ export function ReadinessGauge({ value, label = "Readiness", size = 160, classNa
 
   return (
     <div className={cn("inline-flex flex-col items-center gap-3", className)}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 200 200"
-        role="img"
-        aria-label={`${label}: ${clamped}%`}
-      >
+      {/* Tactile bezel: a raised metal ring housing a recessed dial face — the one
+          place molded and recessed elevation legitimately meet on the same object,
+          because a real instrument gauge actually is built that way. */}
+      <div className="rounded-full bg-console p-2 molded">
+        <div className="rounded-full bg-panel p-1 carved">
+          <svg
+            width={size}
+            height={size}
+            viewBox="0 0 200 200"
+            role="img"
+            aria-label={`${label}: ${clamped}%`}
+          >
         <defs>
           <clipPath id="gauge-clip">
             <circle cx="100" cy="100" r="86" />
@@ -98,7 +103,9 @@ export function ReadinessGauge({ value, label = "Readiness", size = 160, classNa
           <line x1="114" y1="100" x2="134" y2="100" />
           <circle cx="100" cy="100" r="3" fill="var(--color-beacon)" stroke="none" />
         </g>
-      </svg>
+          </svg>
+        </div>
+      </div>
       <div className="text-center">
         <p className="font-display text-2xl font-bold text-ink">{clamped}%</p>
         <p className="font-display text-micro uppercase tracking-wider text-ink-dim">

@@ -14,7 +14,7 @@ export function AdminAnalyticsCard({ title, subtitle, value, badge }: AdminAnaly
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-bold text-ink">{title}</h2>
+          <h2 className="letterpress font-bold text-ink">{title}</h2>
           <p className="mt-1 text-sm text-ink-dim">{subtitle}</p>
         </div>
         {badge ? <Badge tone="beacon">{badge}</Badge> : null}

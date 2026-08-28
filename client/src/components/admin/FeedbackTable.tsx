@@ -10,7 +10,7 @@ const statusTones = { open: "beacon", reviewed: "heading", closed: "nominal" } a
 
 export function FeedbackTable({ feedback }: FeedbackTableProps) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden" elevation="flat">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
