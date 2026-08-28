@@ -1,12 +1,6 @@
 import { z } from "zod";
 
-import {
-  nonEmptyObject,
-  requiredText,
-  stringListField,
-  userRoleField,
-  userStatusField,
-} from "./common";
+import { nonEmptyObject, requiredText, stringListField } from "./common";
 
 export const updateProfileSchema = nonEmptyObject(
   z.object({
@@ -20,9 +14,5 @@ export const updateProfileSchema = nonEmptyObject(
     preferredStack: stringListField.optional(),
   }),
 );
-
-/** Admin-only: role and status are never self-serve on /users/me. */
-export const updateUserRoleSchema = z.object({ role: userRoleField });
-export const updateUserStatusSchema = z.object({ status: userStatusField });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

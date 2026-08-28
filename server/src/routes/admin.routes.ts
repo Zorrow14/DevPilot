@@ -1,66 +1,59 @@
 import { Router } from "express";
 
 import {
+  deleteProject,
+  getOverview,
+  getProjects,
+  getRoadmaps,
+  getSkillAnalytics,
+  getSkills,
+  getUsers,
+  updateUserRole,
+  updateUserStatus,
+} from "../controllers/admin.controller";
+import {
   createAnnouncement,
   deleteAnnouncement,
   getAnnouncements,
   updateAnnouncement,
 } from "../controllers/announcement.controller";
 import { getAllFeedback, updateFeedbackStatus } from "../controllers/feedback.controller";
-import * as announcementService from "../services/announcement.service";
-import * as feedbackService from "../services/feedback.service";
 import { validate } from "../middleware/validate.middleware";
+import {
+  adminProjectQuerySchema,
+  adminUserQuerySchema,
+  updateUserRoleSchema,
+  updateUserStatusSchema,
+} from "../validators/admin.validator";
 import {
   createAnnouncementSchema,
   updateAnnouncementSchema,
 } from "../validators/announcement.validator";
 import { updateFeedbackStatusSchema } from "../validators/feedback.validator";
-import {
-  mockAdminUsers,
-  mockProjects,
-  mockRoadmaps,
-  mockSkills,
-} from "../data/mockData";
 
+/**
+ * Every route here is mounted behind authMiddleware + requireAdmin in
+ * index.routes.ts. None of the handlers re-check the role, so that mount is
+ * load-bearing — see admin.middleware.test.ts.
+ */
 const router = Router();
 
-router.get("/overview", async (_req, res, next) => {
-  try {
-    res.json({
-      users: mockAdminUsers,
-      projects: mockProjects,
-      skills: mockSkills,
-      roadmaps: mockRoadmaps,
-      feedback: await feedbackService.getAllFeedback(),
-      announcements: await announcementService.getAnnouncements(),
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/overview", getOverview);
 
-router.get("/users", (_req, res) => {
-  res.json(mockAdminUsers);
-});
+router.get("/users", validate(adminUserQuerySchema, "query"), getUsers);
+router.patch("/users/:id/role", validate(updateUserRoleSchema), updateUserRole);
+router.patch("/users/:id/status", validate(updateUserStatusSchema), updateUserStatus);
 
-router.get("/projects", (_req, res) => {
-  res.json(mockProjects);
-});
+router.get("/projects", validate(adminProjectQuerySchema, "query"), getProjects);
+router.delete("/projects/:id", deleteProject);
 
-router.get("/skills", (_req, res) => {
-  res.json(mockSkills);
-});
+router.get("/skills", getSkills);
+router.get("/skills/analytics", getSkillAnalytics);
 
-router.get("/roadmaps", (_req, res) => {
-  res.json(mockRoadmaps);
-});
+router.get("/roadmaps", getRoadmaps);
 
 router.get("/feedback", getAllFeedback);
-router.patch(
-  "/feedback/:id/status",
-  validate(updateFeedbackStatusSchema),
-  updateFeedbackStatus,
-);
+router.patch("/feedback/:id/status", validate(updateFeedbackStatusSchema), updateFeedbackStatus);
 
 router.get("/announcements", getAnnouncements);
 router.post("/announcements", validate(createAnnouncementSchema), createAnnouncement);

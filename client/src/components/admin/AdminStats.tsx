@@ -1,26 +1,35 @@
 import { StatCard } from "@/src/components/ui/StatCard";
-import type { Feedback, Project, Skill, User } from "@/src/types";
+import type { PlatformStats } from "@/src/lib/api";
 
 type AdminStatsProps = {
-  users: User[];
-  projects: Project[];
-  skills: Skill[];
-  feedback: Feedback[];
+  stats: PlatformStats;
 };
 
-export function AdminStats({ users, projects, skills, feedback }: AdminStatsProps) {
+export function AdminStats({ stats }: AdminStatsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <StatCard label="Users" value={users.length} tone="beacon" />
-      <StatCard label="Projects" value={projects.length} tone="heading" />
-      <StatCard label="Skills tracked" value={skills.length} tone="nominal" />
+      <StatCard
+        label="Users"
+        value={stats.users}
+        helper={`${stats.activeUsers} active · ${stats.admins} admin`}
+        tone="beacon"
+      />
+      <StatCard
+        label="Projects"
+        value={stats.projects}
+        helper={`${stats.completedProjects} completed`}
+        tone="heading"
+      />
+      <StatCard
+        label="Skills tracked"
+        value={stats.skills}
+        helper={`${stats.roadmaps} roadmaps generated`}
+        tone="nominal"
+      />
       <StatCard
         label="Open feedback"
-        value={
-          // Anything not yet triaged to a terminal state — the queue an admin
-          // still has to work through.
-          feedback.filter((item) => item.status === "new" || item.status === "in-review").length
-        }
+        value={stats.openFeedback}
+        helper={`${stats.completedTasks} / ${stats.tasks} tasks done`}
         tone="alert"
       />
     </div>
