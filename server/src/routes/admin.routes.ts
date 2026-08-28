@@ -1,9 +1,12 @@
 import { Router } from "express";
 
+import { getAllFeedback, updateFeedbackStatus } from "../controllers/feedback.controller";
+import * as feedbackService from "../services/feedback.service";
+import { validate } from "../middleware/validate.middleware";
+import { updateFeedbackStatusSchema } from "../validators/feedback.validator";
 import {
   mockAdminUsers,
   mockAnnouncements,
-  mockFeedback,
   mockProjects,
   mockRoadmaps,
   mockSkills,
@@ -11,15 +14,19 @@ import {
 
 const router = Router();
 
-router.get("/overview", (_req, res) => {
-  res.json({
-    users: mockAdminUsers,
-    projects: mockProjects,
-    skills: mockSkills,
-    roadmaps: mockRoadmaps,
-    feedback: mockFeedback,
-    announcements: mockAnnouncements,
-  });
+router.get("/overview", async (_req, res, next) => {
+  try {
+    res.json({
+      users: mockAdminUsers,
+      projects: mockProjects,
+      skills: mockSkills,
+      roadmaps: mockRoadmaps,
+      feedback: await feedbackService.getAllFeedback(),
+      announcements: mockAnnouncements,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/users", (_req, res) => {
@@ -38,9 +45,12 @@ router.get("/roadmaps", (_req, res) => {
   res.json(mockRoadmaps);
 });
 
-router.get("/feedback", (_req, res) => {
-  res.json(mockFeedback);
-});
+router.get("/feedback", getAllFeedback);
+router.patch(
+  "/feedback/:id/status",
+  validate(updateFeedbackStatusSchema),
+  updateFeedbackStatus,
+);
 
 router.get("/announcements", (_req, res) => {
   res.json(mockAnnouncements);

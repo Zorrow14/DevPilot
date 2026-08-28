@@ -1,6 +1,7 @@
 import type {
   Announcement,
   Feedback,
+  FeedbackStatus,
   Project,
   Roadmap,
   Skill,
@@ -78,6 +79,12 @@ export type ProjectPayload = {
   priority?: string;
   deadline?: string | null;
   progress?: number;
+};
+
+export type FeedbackPayload = {
+  title: string;
+  message: string;
+  type?: string;
 };
 
 export type GenerateRoadmapPayload = {
@@ -194,8 +201,18 @@ export const api = {
     apiRequest<Roadmap[]>("/api/admin/roadmaps", { signal }),
   getAdminFeedback: (signal?: AbortSignal) =>
     apiRequest<Feedback[]>("/api/admin/feedback", { signal }),
+  setFeedbackStatus: (id: string, status: FeedbackStatus) =>
+    apiRequest<Feedback>(`/api/admin/feedback/${id}/status`, {
+      method: "PATCH",
+      body: { status },
+    }),
   getAdminAnnouncements: (signal?: AbortSignal) =>
     apiRequest<Announcement[]>("/api/admin/announcements", { signal }),
+
+  getFeedback: (signal?: AbortSignal) => apiRequest<Feedback[]>("/api/feedback", { signal }),
+  createFeedback: (body: FeedbackPayload) =>
+    apiRequest<Feedback>("/api/feedback", { method: "POST", body }),
+  deleteFeedback: (id: string) => apiRequest<void>(`/api/feedback/${id}`, { method: "DELETE" }),
 
   getMe: (signal?: AbortSignal) => apiRequest<UserProfile>("/api/users/me", { signal }),
   updateMe: (body: UserProfilePayload) =>

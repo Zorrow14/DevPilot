@@ -4,12 +4,19 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   React.TextareaHTMLAttributes<HTMLTextAreaElement> &
   React.SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
+  /**
+   * Keeps the label in the accessibility tree but out of the layout — for
+   * controls whose purpose is already obvious from context, like a select
+   * inside a labelled table column, which still needs an accessible name.
+   */
+  hideLabel?: boolean;
   as?: "input" | "textarea" | "select";
   children?: React.ReactNode;
 };
 
 export function Input({
   label,
+  hideLabel = false,
   as = "input",
   type = "text",
   placeholder,
@@ -22,7 +29,7 @@ export function Input({
   // inside it, so the field looks like something you type into, not onto.
   const fieldClassName = cn(
     "mt-2 w-full rounded-bezel border border-paper-line bg-paper px-4 py-3 text-sm text-paper-ink carved outline-none placeholder:text-paper-ink/50 focus-visible:border-beacon",
-    !label && "mt-0",
+    (!label || hideLabel) && "mt-0",
     className,
   );
 
@@ -53,7 +60,12 @@ export function Input({
 
   return (
     <label className="block">
-      <span className="font-display text-micro uppercase tracking-wider text-ink-dim">
+      <span
+        className={cn(
+          "font-display text-micro uppercase tracking-wider text-ink-dim",
+          hideLabel && "sr-only",
+        )}
+      >
         {label}
       </span>
       {field}

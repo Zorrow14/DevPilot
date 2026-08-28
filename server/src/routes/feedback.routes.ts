@@ -1,6 +1,17 @@
-// Express feedback routes will be defined here.
+import { Router } from "express";
 
-export const feedbackRoutes = {
-  basePath: "/api/feedback",
-  plannedEndpoints: ["GET /", "POST /", "PATCH /:id"],
-};
+import {
+  createFeedback,
+  deleteMyFeedback,
+  getMyFeedback,
+} from "../controllers/feedback.controller";
+import { validate } from "../middleware/validate.middleware";
+import { createFeedbackSchema } from "../validators/feedback.validator";
+
+const router = Router();
+
+router.get("/", getMyFeedback);
+router.post("/", validate(createFeedbackSchema), createFeedback);
+router.delete("/:id", deleteMyFeedback);
+
+export default router;

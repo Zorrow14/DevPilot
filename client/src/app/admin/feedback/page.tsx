@@ -8,7 +8,9 @@ import { useApiResource } from "@/src/hooks/useApiResource";
 import { api } from "@/src/lib/api";
 
 export default function AdminFeedbackPage() {
-  const { data, error, isLoading } = useApiResource((signal) => api.getAdminFeedback(signal));
+  const { data, error, isLoading, reload } = useApiResource((signal) =>
+    api.getAdminFeedback(signal),
+  );
 
   return (
     <AdminShell title="Feedback" description="Feedback queue submitted by users.">
@@ -17,7 +19,7 @@ export default function AdminFeedbackPage() {
       ) : error ? (
         <EmptyState title="Feedback unavailable" description={error} />
       ) : (
-        <FeedbackTable feedback={data ?? []} />
+        <FeedbackTable feedback={data ?? []} onChanged={reload} />
       )}
     </AdminShell>
   );

@@ -94,12 +94,18 @@ export type Announcement = {
   createdAt: string;
 };
 
+export type FeedbackStatus = "new" | "in-review" | "resolved" | "rejected";
+
 export type Feedback = {
   id: string;
   userId: string;
+  /** Only populated on the admin queue, which joins the submitter. */
   userName: string;
+  userEmail: string;
+  title: string;
   message: string;
-  status: "open" | "reviewed" | "closed";
-  category: "bug" | "feature" | "general";
+  type: "bug" | "feature" | "general";
+  status: FeedbackStatus;
   createdAt: string;
+  updatedAt: string;
 };

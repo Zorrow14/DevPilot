@@ -1,6 +1,5 @@
 import type {
   Announcement,
-  Feedback,
   Project,
   Skill,
   Task,
@@ -183,23 +182,3 @@ export const mockAdminUsers: User[] = [
   },
 ];
 
-export const mockFeedback: Feedback[] = [
-  {
-    id: "feedback-1",
-    userId: "user-1",
-    userName: "Alyssa Chen",
-    message: "It would be useful to compare readiness score changes week over week.",
-    status: "open",
-    category: "feature",
-    createdAt: "2026-06-13",
-  },
-  {
-    id: "feedback-2",
-    userId: "user-2",
-    userName: "Ravi Kumar",
-    message: "Project deadlines should show a stronger visual warning near due dates.",
-    status: "reviewed",
-    category: "general",
-    createdAt: "2026-06-11",
-  },
-];

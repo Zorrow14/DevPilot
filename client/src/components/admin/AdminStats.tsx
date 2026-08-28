@@ -16,7 +16,11 @@ export function AdminStats({ users, projects, skills, feedback }: AdminStatsProp
       <StatCard label="Skills tracked" value={skills.length} tone="nominal" />
       <StatCard
         label="Open feedback"
-        value={feedback.filter((item) => item.status === "open").length}
+        value={
+          // Anything not yet triaged to a terminal state — the queue an admin
+          // still has to work through.
+          feedback.filter((item) => item.status === "new" || item.status === "in-review").length
+        }
         tone="alert"
       />
     </div>

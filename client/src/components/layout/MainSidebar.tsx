@@ -14,6 +14,7 @@ const navItems = [
   { label: "Skills", href: routes.skills },
   { label: "Projects", href: routes.projects },
   { label: "Roadmap", href: routes.roadmap },
+  { label: "Feedback", href: routes.feedback },
   { label: "Profile", href: routes.profile },
 ];
 
