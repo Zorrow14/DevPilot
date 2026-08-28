@@ -20,7 +20,7 @@ const generateContentMock = vi.fn();
 
 vi.mock("../lib/prisma", () => ({ prisma: prismaMock }));
 vi.mock("../config/gemini", () => ({
-  GEMINI_MODEL: "gemini-2.5-flash",
+  GEMINI_MODEL: "gemini-3.6-flash",
   isGeminiConfigured: () => true,
   getGeminiClient: async () => ({ models: { generateContent: generateContentMock } }),
   resetGeminiClient: () => {},

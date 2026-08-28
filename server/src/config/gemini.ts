@@ -19,10 +19,19 @@ let client: GoogleGenAI | null = null;
 
 /**
  * Free tier by default. Flash is the model the free tier grants meaningful
- * request quota on; overridable so a paid deployment can point at a stronger
- * model without a code change.
+ * request quota on; overridable so a deployment can point at a stronger model
+ * without a code change.
+ *
+ * Pinned to a version rather than the `gemini-flash-latest` alias on purpose.
+ * The alias silently changes which model runs, so output quality and shape can
+ * move without a deploy — and it is the endpoint that absorbs demand spikes
+ * (it answered 503 while the pinned model was fine). Bumping this is a
+ * deliberate, reviewable change.
+ *
+ * Retired models 404 rather than falling back, so if generation starts failing
+ * with a 404 naming a replacement, update this.
  */
-export const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+export const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-3.6-flash";
 
 export function isGeminiConfigured() {
   return Boolean(process.env.GEMINI_API_KEY);
