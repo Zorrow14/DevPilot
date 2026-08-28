@@ -7,6 +7,7 @@ import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { api } from "@/src/lib/api";
+import { formatRelativeDate } from "@/src/lib/dates";
 import type { Skill } from "@/src/types";
 
 type SkillCardProps = {
@@ -22,6 +23,7 @@ const levelTones = {
 
 export function SkillCard({ skill, onChanged }: SkillCardProps) {
   const tone = levelTones[skill.level];
+  const practiced = formatRelativeDate(skill.lastPracticed);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +45,9 @@ export function SkillCard({ skill, onChanged }: SkillCardProps) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="letterpress text-lg font-bold text-ink">{skill.name}</h2>
-          <p className="mt-1 text-sm text-ink-dim">Practiced {skill.lastPracticed}</p>
+          <p className="mt-1 text-sm text-ink-dim">
+            {practiced ? `Practiced ${practiced}` : "Not practiced yet"}
+          </p>
         </div>
         <Badge>{skill.category}</Badge>
       </div>

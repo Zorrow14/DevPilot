@@ -15,7 +15,10 @@ function formatSkill(skill: Skill) {
   return {
     ...skill,
     level: skill.level.toLowerCase(),
-    lastPracticed: "Today",
+    // Date-only, matching how formatProject serializes deadline. Empty string
+    // rather than null for a skill that has never been practised, so the client
+    // renders a falsy value instead of the word "null".
+    lastPracticed: skill.lastPracticedAt?.toISOString().slice(0, 10) ?? "",
   };
 }
 
@@ -103,6 +106,8 @@ export async function updateSkill(
 ) {
   await findOwnedSkill(skillId, userId);
 
+  const progress = normalizeProgress(payload.progress);
+
   const skill = await prisma.skill.update({
     where: {
       id: skillId,
@@ -111,8 +116,12 @@ export async function updateSkill(
       name: payload.name,
       category: payload.category,
       level: normalizeSkillLevel(payload.level),
-      progress: normalizeProgress(payload.progress),
+      progress,
       notes: payload.notes,
+      // Moving progress is the signal that practice happened. Renaming or
+      // recategorising a skill is not practice, so those leave the date alone —
+      // which is exactly why this is a separate column from updatedAt.
+      lastPracticedAt: progress === undefined ? undefined : new Date(),
     },
   });
 

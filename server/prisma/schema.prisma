@@ -75,16 +75,22 @@ model User {
 }
 
 model Skill {
-  id        String     @id @default(cuid())
-  userId    String
-  name      String
-  category  String
-  level     SkillLevel @default(BEGINNER)
-  progress  Int        @default(0)
-  notes     String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String     @id @default(cuid())
+  userId   String
+  name     String
+  category String
+  level    SkillLevel @default(BEGINNER)
+  progress Int        @default(0)
+  notes    String?
+
+  /// Set when the user records practice on this skill. Distinct from updatedAt,
+  /// which also moves for edits that are not practice (renaming, recategorising).
+  /// Null until the skill has been practised at least once.
+  lastPracticedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -157,6 +163,12 @@ model Announcement {
   createdById String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  // Deliberately NOT onDelete: Cascade, unlike every other User relation.
+  // Skills/projects/roadmaps/feedback are personal data and should die with the
+  // account; an announcement is platform content shown to everyone, so it must
+  // not disappear because its author's account was removed. Prisma's default
+  // (Restrict) blocks deleting an author who still has announcements, which is
+  // the safe failure — reassign or delete them first.
   createdBy   User     @relation(fields: [createdById], references: [id])
 
   @@index([createdById])

@@ -67,7 +67,7 @@ router.get("/stats", async (req, res, next) => {
       skills: skills.map((skill) => ({
         ...skill,
         level: formatSkill(skill.level),
-        lastPracticed: "Today",
+        lastPracticed: skill.lastPracticedAt?.toISOString().slice(0, 10) ?? "",
       })),
       projects: projects.map((project) => ({
         ...project,
