@@ -9,6 +9,7 @@ import roadmapRoutes from "./roadmap.routes";
 import skillRoutes from "./skill.routes";
 import taskRoutes from "./task.routes";
 import userRoutes from "./user.routes";
+import { requireAdmin } from "../middleware/admin.middleware";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
@@ -26,7 +27,7 @@ router.use("/skills", authMiddleware, skillRoutes);
 router.use("/projects", authMiddleware, projectRoutes);
 router.use("/tasks", authMiddleware, taskRoutes);
 router.use("/roadmaps", authMiddleware, roadmapRoutes);
-router.use("/announcements", announcementRoutes);
-router.use("/admin", adminRoutes);
+router.use("/announcements", authMiddleware, announcementRoutes);
+router.use("/admin", authMiddleware, requireAdmin, adminRoutes);
 
 export default router;

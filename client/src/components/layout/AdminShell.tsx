@@ -11,7 +11,7 @@ type AdminShellProps = {
 
 export function AdminShell({ children, title, description }: AdminShellProps) {
   return (
-    <RequireAuth>
+    <RequireAuth requireAdmin>
       <main className="min-h-screen bg-panel text-ink">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[280px_1fr]">
           <AdminSidebar />

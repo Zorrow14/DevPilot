@@ -22,6 +22,15 @@ export async function authMiddleware(
     const firebaseUser = getFirebaseUserInfo(decodedToken);
     const dbUser = await syncFirebaseUser(firebaseUser);
 
+    // Deactivation is enforced here rather than at each route: the token stays
+    // valid in Firebase, so Postgres status is the only thing that can lock a
+    // suspended account out. Returned before req.user is populated so no
+    // downstream handler can act on a deactivated identity.
+    if (dbUser.status === "INACTIVE") {
+      res.status(403).json({ message: "This account has been deactivated." });
+      return;
+    }
+
     req.user = {
       dbUserId: dbUser.id,
       firebaseUid: dbUser.firebaseUid,
