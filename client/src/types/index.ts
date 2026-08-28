@@ -49,16 +49,41 @@ export type RoadmapStep = {
   description: string;
   duration: string;
   status: "planned" | "active" | "completed";
+  /** Index into the generated weekly plan; what the progress toggle sends back. */
+  week: number;
+};
+
+/**
+ * The generated body, mirroring roadmapContentSchema on the server. Held
+ * separately from the flat fields so the rich sections the README promises
+ * (mini projects, mistakes to avoid, next steps) survive round-tripping through
+ * the Json column.
+ */
+export type RoadmapContent = {
+  title: string;
+  summary: string;
+  weeklyPlan: { week: number; focus: string; objectives: string[] }[];
+  recommendedSkills: { name: string; reason: string }[];
+  miniProjects: { title: string; description: string }[];
+  milestones: { week: number; title: string }[];
+  mistakesToAvoid: string[];
+  nextSteps: string[];
 };
 
 export type Roadmap = {
   id: string;
-  title: string;
-  description: string;
+  goal: string;
   targetRole: string;
   duration: string;
-  steps: RoadmapStep[];
+  currentSkills: string[];
+  completedWeeks: number[];
   createdAt: string;
+  /** Taken from the generated content, falling back to `goal` if it is unreadable. */
+  title: string;
+  description: string;
+  /** Derived server-side from weeklyPlan + completedWeeks. */
+  steps: RoadmapStep[];
+  content: RoadmapContent | null;
 };
 
 export type Announcement = {

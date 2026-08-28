@@ -1,42 +1,117 @@
-import { Badge } from "@/src/components/ui/Badge";
+"use client";
+
+import { useState, type FormEvent } from "react";
+
 import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { Input } from "@/src/components/ui/Input";
-import type { Roadmap, Skill } from "@/src/types";
+import { Sparkle } from "@/src/components/ui/Sparkle";
+import { api } from "@/src/lib/api";
+import type { Skill } from "@/src/types";
 
 type RoadmapFormProps = {
-  roadmap: Roadmap;
   skills: Skill[];
+  targetRole: string;
+  onGenerated: () => void;
 };
 
 /**
- * Read-only until generation exists server-side: /api/roadmaps is GET-only and
- * returns fixture data, so the fields are disabled rather than left looking live.
+ * Durations are a fixed list rather than free text: the generator caps the plan
+ * at 16 weeks, and an open field invites "2 years", which produces a truncated
+ * plan that silently ignores what was asked for.
  */
-export function RoadmapForm({ roadmap, skills }: RoadmapFormProps) {
+const DURATIONS = ["4 weeks", "6 weeks", "8 weeks", "12 weeks", "16 weeks"];
+
+export function RoadmapForm({ skills, targetRole, onGenerated }: RoadmapFormProps) {
+  const [goal, setGoal] = useState("");
+  const [role, setRole] = useState(targetRole);
+  const [duration, setDuration] = useState(DURATIONS[2]);
+  const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsGenerating(true);
+
+    try {
+      await api.generateRoadmap({
+        goal,
+        targetRole: role,
+        duration,
+        // Sent from the tracked skill list rather than a free-text field, so the
+        // model builds on what the user actually has instead of what they
+        // remembered to type.
+        currentSkills: skills.map((skill) => skill.name),
+      });
+      setGoal("");
+      onGenerated();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to generate a roadmap.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
   return (
     <Card>
-      <div className="flex items-start justify-between gap-3">
-        <h2 className="font-display text-xs font-bold uppercase tracking-wider text-ink">
-          Roadmap builder
-        </h2>
-        <Badge tone="alert">Not wired up</Badge>
-      </div>
+      <h2 className="flex items-center gap-1.5 font-display text-xs font-bold uppercase tracking-wider text-ink">
+        <Sparkle /> Roadmap builder
+      </h2>
 
       <p className="mt-3 text-sm text-ink-dim">
-        Generation is not connected yet — the backend serves a fixture roadmap and has no generate
-        endpoint. These fields preview the inputs it will take.
+        Generates a week-by-week plan from your goal and the skills already on your profile.
       </p>
 
-      <fieldset className="mt-5 space-y-4" disabled>
-        <Input label="Career goal" placeholder="Become internship-ready" />
-        <Input label="Current skills" placeholder={skills.map((skill) => skill.name).join(", ")} />
-        <Input label="Target role" placeholder={roadmap.targetRole} />
-        <Input label="Duration" placeholder={roadmap.duration} />
-        <Button className="w-full" disabled>
-          Generate roadmap
+      <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
+        {error ? (
+          <p className="rounded-bezel border border-alert-dim bg-alert-dim/20 px-4 py-3 text-sm text-alert">
+            {error}
+          </p>
+        ) : null}
+
+        <Input
+          label="Career goal"
+          placeholder="Become internship-ready as a frontend developer"
+          value={goal}
+          onChange={(event) => setGoal(event.target.value)}
+          required
+        />
+        <Input
+          label="Target role"
+          placeholder="Frontend Developer Intern"
+          value={role}
+          onChange={(event) => setRole(event.target.value)}
+          required
+        />
+        <Input
+          label="Duration"
+          as="select"
+          value={duration}
+          onChange={(event) => setDuration(event.target.value)}
+        >
+          {DURATIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </Input>
+
+        <div className="rounded-bezel border border-bezel bg-console-raised px-4 py-3">
+          <p className="font-display text-micro uppercase tracking-wider text-ink-faint">
+            Skills sent as context
+          </p>
+          <p className="mt-1.5 text-sm text-ink-dim">
+            {skills.length > 0
+              ? skills.map((skill) => skill.name).join(", ")
+              : "None yet — add skills to get a plan that builds on what you know."}
+          </p>
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isGenerating}>
+          {isGenerating ? "Generating..." : "Generate roadmap"}
         </Button>
-      </fieldset>
+      </form>
     </Card>
   );
 }

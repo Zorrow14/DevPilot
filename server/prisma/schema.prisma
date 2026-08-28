@@ -129,15 +129,20 @@ model Task {
 }
 
 model Roadmap {
-  id            String   @id @default(cuid())
-  userId        String
-  goal          String
-  currentSkills String[]
-  targetRole    String
-  duration      String
-  content       Json
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  userId         String
+  goal           String
+  currentSkills  String[]
+  targetRole     String
+  duration       String
+  content        Json
+  /// Week numbers the user has ticked off, indexing into content.weeklyPlan.
+  /// Lives here rather than inside `content` so progress survives untouched if
+  /// the generated body is ever re-parsed or re-shaped, and so it can be
+  /// aggregated in SQL for the readiness score without unpacking the Json.
+  completedWeeks Int[]
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

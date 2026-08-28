@@ -2,7 +2,6 @@ import type {
   Announcement,
   Feedback,
   Project,
-  Roadmap,
   Skill,
   Task,
   User,
@@ -131,40 +130,6 @@ export const mockTasks: Task[] = [
     priority: "low",
     dueDate: "2026-06-28",
     completed: false,
-  },
-];
-
-export const mockRoadmaps: Roadmap[] = [
-  {
-    id: "roadmap-1",
-    title: "Frontend Internship Sprint",
-    description: "A mock AI roadmap focused on portfolio readiness and interview practice.",
-    targetRole: "Frontend Developer Intern",
-    duration: "8 weeks",
-    createdAt: "2026-06-12",
-    steps: [
-      {
-        id: "step-1",
-        title: "Strengthen TypeScript fundamentals",
-        description: "Practice typed props, reusable utility types, and API response models.",
-        duration: "2 weeks",
-        status: "active",
-      },
-      {
-        id: "step-2",
-        title: "Ship one polished portfolio case study",
-        description: "Document problem, process, tradeoffs, screenshots, and outcomes.",
-        duration: "2 weeks",
-        status: "planned",
-      },
-      {
-        id: "step-3",
-        title: "Practice frontend interview rounds",
-        description: "Review React rendering, accessibility, data fetching, and debugging.",
-        duration: "4 weeks",
-        status: "planned",
-      },
-    ],
   },
 ];
 

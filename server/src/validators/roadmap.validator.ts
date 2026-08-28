@@ -15,3 +15,11 @@ export const generateRoadmapSchema = z.object({
 });
 
 export type GenerateRoadmapInput = z.infer<typeof generateRoadmapSchema>;
+
+/** Ticking one week of a generated plan on or off. */
+export const roadmapProgressSchema = z.object({
+  week: z.number().int().min(1, "A week number is required."),
+  completed: z.boolean({ message: "completed must be true or false." }),
+});
+
+export type RoadmapProgressInput = z.infer<typeof roadmapProgressSchema>;

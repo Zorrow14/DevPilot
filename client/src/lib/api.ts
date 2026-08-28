@@ -80,6 +80,13 @@ export type ProjectPayload = {
   progress?: number;
 };
 
+export type GenerateRoadmapPayload = {
+  goal: string;
+  targetRole: string;
+  duration: string;
+  currentSkills?: string[];
+};
+
 export type TaskPayload = {
   title?: string;
   description?: string | null;
@@ -167,6 +174,14 @@ export const api = {
   getProjectTasks: (projectId: string, signal?: AbortSignal) =>
     apiRequest<Task[]>(`/api/projects/${projectId}/tasks`, { signal }),
   getRoadmaps: (signal?: AbortSignal) => apiRequest<Roadmap[]>("/api/roadmaps", { signal }),
+  generateRoadmap: (body: GenerateRoadmapPayload) =>
+    apiRequest<Roadmap>("/api/roadmaps/generate", { method: "POST", body }),
+  setRoadmapWeek: (id: string, week: number, completed: boolean) =>
+    apiRequest<Roadmap>(`/api/roadmaps/${id}/progress`, {
+      method: "PATCH",
+      body: { week, completed },
+    }),
+  deleteRoadmap: (id: string) => apiRequest<void>(`/api/roadmaps/${id}`, { method: "DELETE" }),
   getAnnouncements: (signal?: AbortSignal) =>
     apiRequest<Announcement[]>("/api/announcements", { signal }),
   getAdminOverview: (signal?: AbortSignal) =>

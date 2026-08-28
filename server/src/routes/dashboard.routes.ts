@@ -1,11 +1,9 @@
 import { Router } from "express";
 
 import { prisma } from "../lib/prisma";
+import { getRoadmaps } from "../services/roadmap.service";
 import { calculateReadinessScore } from "../utils/calculateReadinessScore";
-import {
-  mockAnnouncements,
-  mockRoadmaps,
-} from "../data/mockData";
+import { mockAnnouncements } from "../data/mockData";
 
 const router = Router();
 
@@ -28,7 +26,7 @@ router.get("/stats", async (req, res, next) => {
       return;
     }
 
-    const [account, skills, projects, tasks] = await Promise.all([
+    const [account, skills, projects, tasks, roadmaps] = await Promise.all([
       prisma.user.findUniqueOrThrow({ where: { id: req.user.dbUserId } }),
       prisma.skill.findMany({
         where: { userId: req.user.dbUserId },
@@ -46,6 +44,7 @@ router.get("/stats", async (req, res, next) => {
         },
         orderBy: { createdAt: "desc" },
       }),
+      getRoadmaps(req.user.dbUserId),
     ]);
 
     const readiness = calculateReadinessScore({ skills, projects, tasks });
@@ -84,7 +83,7 @@ router.get("/stats", async (req, res, next) => {
         dueDate: task.dueDate?.toISOString().slice(0, 10) ?? "",
         completed: task.status === "COMPLETED",
       })),
-      roadmaps: mockRoadmaps,
+      roadmaps,
       announcements: mockAnnouncements,
     });
   } catch (error) {
