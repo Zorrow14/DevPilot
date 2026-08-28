@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import { mockAnnouncements } from "../data/mockData";
+import { getAnnouncements } from "../controllers/announcement.controller";
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  res.json(mockAnnouncements);
-});
+// Read-only for regular users; the write endpoints live under /api/admin,
+// behind requireAdmin.
+router.get("/", getAnnouncements);
 
 export default router;

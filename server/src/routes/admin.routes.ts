@@ -1,12 +1,22 @@
 import { Router } from "express";
 
+import {
+  createAnnouncement,
+  deleteAnnouncement,
+  getAnnouncements,
+  updateAnnouncement,
+} from "../controllers/announcement.controller";
 import { getAllFeedback, updateFeedbackStatus } from "../controllers/feedback.controller";
+import * as announcementService from "../services/announcement.service";
 import * as feedbackService from "../services/feedback.service";
 import { validate } from "../middleware/validate.middleware";
+import {
+  createAnnouncementSchema,
+  updateAnnouncementSchema,
+} from "../validators/announcement.validator";
 import { updateFeedbackStatusSchema } from "../validators/feedback.validator";
 import {
   mockAdminUsers,
-  mockAnnouncements,
   mockProjects,
   mockRoadmaps,
   mockSkills,
@@ -22,7 +32,7 @@ router.get("/overview", async (_req, res, next) => {
       skills: mockSkills,
       roadmaps: mockRoadmaps,
       feedback: await feedbackService.getAllFeedback(),
-      announcements: mockAnnouncements,
+      announcements: await announcementService.getAnnouncements(),
     });
   } catch (error) {
     next(error);
@@ -52,8 +62,9 @@ router.patch(
   updateFeedbackStatus,
 );
 
-router.get("/announcements", (_req, res) => {
-  res.json(mockAnnouncements);
-});
+router.get("/announcements", getAnnouncements);
+router.post("/announcements", validate(createAnnouncementSchema), createAnnouncement);
+router.put("/announcements/:id", validate(updateAnnouncementSchema), updateAnnouncement);
+router.delete("/announcements/:id", deleteAnnouncement);
 
 export default router;

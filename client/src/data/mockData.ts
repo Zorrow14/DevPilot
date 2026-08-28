@@ -1,5 +1,4 @@
 import type {
-  Announcement,
   Project,
   Skill,
   Task,
@@ -129,23 +128,6 @@ export const mockTasks: Task[] = [
     priority: "low",
     dueDate: "2026-06-28",
     completed: false,
-  },
-];
-
-export const mockAnnouncements: Announcement[] = [
-  {
-    id: "announcement-1",
-    title: "Mock roadmap generator is ready",
-    message: "Roadmaps now show structured milestones using local mock data.",
-    audience: "all",
-    createdAt: "2026-06-14",
-  },
-  {
-    id: "announcement-2",
-    title: "Portfolio review checklist added",
-    message: "Use the dashboard tasks to keep your internship portfolio moving.",
-    audience: "users",
-    createdAt: "2026-06-10",
   },
 ];
 

@@ -90,8 +90,11 @@ export type Announcement = {
   id: string;
   title: string;
   message: string;
-  audience: "users" | "admins" | "all";
+  createdById: string;
+  /** Only populated on the admin panel, which joins the author. */
+  createdByName: string;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type FeedbackStatus = "new" | "in-review" | "resolved" | "rejected";

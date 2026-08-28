@@ -8,7 +8,7 @@ import { useApiResource } from "@/src/hooks/useApiResource";
 import { api } from "@/src/lib/api";
 
 export default function AdminAnnouncementsPage() {
-  const { data, error, isLoading } = useApiResource((signal) =>
+  const { data, error, isLoading, reload } = useApiResource((signal) =>
     api.getAdminAnnouncements(signal),
   );
 
@@ -19,7 +19,7 @@ export default function AdminAnnouncementsPage() {
       ) : error ? (
         <EmptyState title="Announcements unavailable" description={error} />
       ) : (
-        <AnnouncementPanel announcements={data ?? []} />
+        <AnnouncementPanel announcements={data ?? []} onChanged={reload} />
       )}
     </AdminShell>
   );

@@ -81,6 +81,11 @@ export type ProjectPayload = {
   progress?: number;
 };
 
+export type AnnouncementPayload = {
+  title?: string;
+  message?: string;
+};
+
 export type FeedbackPayload = {
   title: string;
   message: string;
@@ -208,6 +213,12 @@ export const api = {
     }),
   getAdminAnnouncements: (signal?: AbortSignal) =>
     apiRequest<Announcement[]>("/api/admin/announcements", { signal }),
+  createAnnouncement: (body: AnnouncementPayload) =>
+    apiRequest<Announcement>("/api/admin/announcements", { method: "POST", body }),
+  updateAnnouncement: (id: string, body: AnnouncementPayload) =>
+    apiRequest<Announcement>(`/api/admin/announcements/${id}`, { method: "PUT", body }),
+  deleteAnnouncement: (id: string) =>
+    apiRequest<void>(`/api/admin/announcements/${id}`, { method: "DELETE" }),
 
   getFeedback: (signal?: AbortSignal) => apiRequest<Feedback[]>("/api/feedback", { signal }),
   createFeedback: (body: FeedbackPayload) =>
