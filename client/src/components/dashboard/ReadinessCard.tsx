@@ -28,6 +28,16 @@ export function ReadinessCard({ readiness, className }: ReadinessCardProps) {
     { label: "Projects shipped", value: readiness.projects },
     { label: "Tasks closed", value: readiness.tasks },
     { label: "Stack coverage", value: readiness.coverage },
+    { label: "Roadmap follow-through", value: readiness.roadmap },
+  ];
+
+  // Depth per core area, where `coverage` above is breadth. Shown as compact
+  // chips rather than another five bars, which would bury the gauge.
+  const categories = [
+    { label: "Frontend", value: readiness.categories.frontend },
+    { label: "Backend", value: readiness.categories.backend },
+    { label: "Database", value: readiness.categories.database },
+    { label: "Deployment", value: readiness.categories.deployment },
   ];
 
   return (
@@ -46,6 +56,30 @@ export function ReadinessCard({ readiness, className }: ReadinessCardProps) {
             <ProgressBar value={component.value} tone={toneForScore(component.value)} />
           </div>
         ))}
+      </div>
+
+      <div className="mt-5 w-full border-t border-bezel pt-5">
+        <p className="font-display text-micro uppercase tracking-wider text-ink-faint">
+          Core stack depth
+        </p>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {categories.map((category) => (
+            <div
+              key={category.label}
+              className="flex items-baseline justify-between gap-2 rounded-bezel border border-bezel bg-console-raised px-3 py-2"
+            >
+              <span className="text-xs text-ink-dim">{category.label}</span>
+              <span
+                className={cn(
+                  "font-display text-sm font-bold",
+                  category.value === 0 ? "text-ink-faint" : "text-ink",
+                )}
+              >
+                {category.value}%
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </Card>
   );

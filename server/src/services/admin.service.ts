@@ -1,6 +1,7 @@
 import type { Prisma, Project, Skill, User } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
+import { getRoadmapActivityByUser, type RoadmapActivity } from "./roadmap.service";
 import { calculateReadinessScore } from "../utils/calculateReadinessScore";
 import { ForbiddenError, NotFoundError } from "../utils/errors";
 
@@ -17,11 +18,14 @@ type UserWithWork = User & {
   projects: Pick<Project, "status">[];
 };
 
-function formatAdminUser(user: UserWithWork & { taskStatuses?: string[] }) {
+function formatAdminUser(
+  user: UserWithWork & { taskStatuses?: string[]; roadmapActivity?: RoadmapActivity[] },
+) {
   const readiness = calculateReadinessScore({
     skills: user.skills,
     projects: user.projects,
     tasks: (user.taskStatuses ?? []).map((status) => ({ status: status as never })),
+    roadmaps: user.roadmapActivity ?? [],
   });
 
   return {
@@ -69,9 +73,12 @@ export async function getUsers(search?: string) {
     },
   });
 
-  const tasks = await prisma.task.findMany({
-    select: { status: true, project: { select: { userId: true } } },
-  });
+  const [tasks, roadmapsByUser] = await Promise.all([
+    prisma.task.findMany({
+      select: { status: true, project: { select: { userId: true } } },
+    }),
+    getRoadmapActivityByUser(),
+  ]);
 
   const tasksByUser = new Map<string, string[]>();
 
@@ -87,7 +94,11 @@ export async function getUsers(search?: string) {
   }
 
   return users.map((user) =>
-    formatAdminUser({ ...user, taskStatuses: tasksByUser.get(user.id) ?? [] }),
+    formatAdminUser({
+      ...user,
+      taskStatuses: tasksByUser.get(user.id) ?? [],
+      roadmapActivity: roadmapsByUser.get(user.id) ?? [],
+    }),
   );
 }
 

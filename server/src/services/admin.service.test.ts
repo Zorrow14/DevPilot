@@ -43,6 +43,7 @@ beforeEach(() => {
     Promise.resolve(storedUser(data)),
   );
   prismaMock.task.findMany.mockResolvedValue([]);
+  prismaMock.roadmap.findMany.mockResolvedValue([]);
 });
 
 describe("self-lockout guardrails", () => {
@@ -140,6 +141,51 @@ describe("getUsers", () => {
 
     // u1 completed everything it had; u2 completed nothing.
     expect(first.readinessScore).toBeGreaterThan(second.readinessScore);
+  });
+
+  it("counts roadmap follow-through toward each user's readiness score", async () => {
+    // Roadmaps are fetched for the whole table in one query and grouped by
+    // userId, so a mix-up here would score users off someone else's plan.
+    prismaMock.user.findMany.mockResolvedValue([
+      storedUser({ id: "u1" }),
+      storedUser({ id: "u2" }),
+    ]);
+    prismaMock.roadmap.findMany.mockResolvedValue([
+      {
+        userId: "u1",
+        completedWeeks: [1, 2, 3, 4],
+        content: {
+          title: "Plan",
+          summary: "s",
+          weeklyPlan: [1, 2, 3, 4].map((week) => ({
+            week,
+            focus: "f",
+            objectives: ["o"],
+          })),
+          recommendedSkills: [{ name: "n", reason: "r" }],
+          miniProjects: [{ title: "t", description: "d" }],
+          milestones: [{ week: 1, title: "t" }],
+          mistakesToAvoid: ["m"],
+          nextSteps: ["n"],
+        },
+      },
+    ]);
+
+    const [first, second] = await adminService.getUsers();
+
+    expect(first.readinessScore).toBeGreaterThan(second.readinessScore);
+  });
+
+  it("fetches roadmaps once rather than per user", async () => {
+    prismaMock.user.findMany.mockResolvedValue([
+      storedUser({ id: "u1" }),
+      storedUser({ id: "u2" }),
+      storedUser({ id: "u3" }),
+    ]);
+
+    await adminService.getUsers();
+
+    expect(prismaMock.roadmap.findMany).toHaveBeenCalledTimes(1);
   });
 
   it("fetches tasks once rather than per user", async () => {

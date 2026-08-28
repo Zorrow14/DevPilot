@@ -216,6 +216,59 @@ export async function getRoadmaps(userId: string) {
   return roadmaps.map(formatRoadmap);
 }
 
+/**
+ * Plan progress for the readiness score, shaped so the scorer stays a pure
+ * function of numbers. Parsing lives here because this module owns the schema
+ * that defines what a week is.
+ *
+ * A roadmap whose stored body no longer parses reports zero total weeks, so it
+ * contributes nothing rather than counting as finished.
+ */
+export type RoadmapActivity = { completedWeeks: number; totalWeeks: number };
+
+function toActivity(roadmap: Pick<Roadmap, "content" | "completedWeeks">): RoadmapActivity {
+  const content = parseStoredContent(roadmap.content);
+
+  return {
+    completedWeeks: roadmap.completedWeeks.length,
+    totalWeeks: content?.weeklyPlan.length ?? 0,
+  };
+}
+
+export async function getRoadmapActivity(userId: string): Promise<RoadmapActivity[]> {
+  const roadmaps = await prisma.roadmap.findMany({
+    where: { userId },
+    select: { content: true, completedWeeks: true },
+  });
+
+  return roadmaps.map(toActivity);
+}
+
+/**
+ * The same activity for every user at once, keyed by user id — one query for
+ * the admin table rather than one per row.
+ */
+export async function getRoadmapActivityByUser(): Promise<Map<string, RoadmapActivity[]>> {
+  const roadmaps = await prisma.roadmap.findMany({
+    select: { userId: true, content: true, completedWeeks: true },
+  });
+
+  const byUser = new Map<string, RoadmapActivity[]>();
+
+  for (const roadmap of roadmaps) {
+    const existing = byUser.get(roadmap.userId);
+    const activity = toActivity(roadmap);
+
+    if (existing) {
+      existing.push(activity);
+    } else {
+      byUser.set(roadmap.userId, [activity]);
+    }
+  }
+
+  return byUser;
+}
+
 export async function generateRoadmap(userId: string, payload: GenerateRoadmapPayload) {
   let content: RoadmapContent;
 

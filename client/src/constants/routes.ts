@@ -6,6 +6,7 @@ export const routes = {
   skills: "/skills",
   projects: "/projects",
   roadmap: "/roadmap",
+  analytics: "/analytics",
   feedback: "/feedback",
   profile: "/profile",
 } as const;

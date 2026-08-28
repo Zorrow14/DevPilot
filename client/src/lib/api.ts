@@ -18,7 +18,17 @@ export type ReadinessBreakdown = {
   skills: number;
   projects: number;
   tasks: number;
+  /** Breadth: how many of the four core stack areas have any skill tracked. */
   coverage: number;
+  /** Follow-through: share of planned roadmap weeks actually ticked off. */
+  roadmap: number;
+  /** Depth: average skill progress within each core area. */
+  categories: {
+    frontend: number;
+    backend: number;
+    database: number;
+    deployment: number;
+  };
 };
 
 export type DashboardStatsResponse = {

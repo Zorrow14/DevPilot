@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { prisma } from "../lib/prisma";
 import { getAnnouncements } from "../services/announcement.service";
-import { getRoadmaps } from "../services/roadmap.service";
+import { getRoadmapActivity, getRoadmaps } from "../services/roadmap.service";
 import { calculateReadinessScore } from "../utils/calculateReadinessScore";
 
 const router = Router();
@@ -26,7 +26,8 @@ router.get("/stats", async (req, res, next) => {
       return;
     }
 
-    const [account, skills, projects, tasks, roadmaps, announcements] = await Promise.all([
+    const [account, skills, projects, tasks, roadmaps, roadmapActivity, announcements] =
+      await Promise.all([
       prisma.user.findUniqueOrThrow({ where: { id: req.user.dbUserId } }),
       prisma.skill.findMany({
         where: { userId: req.user.dbUserId },
@@ -45,10 +46,16 @@ router.get("/stats", async (req, res, next) => {
         orderBy: { createdAt: "desc" },
       }),
       getRoadmaps(req.user.dbUserId),
+      getRoadmapActivity(req.user.dbUserId),
       getAnnouncements(),
     ]);
 
-    const readiness = calculateReadinessScore({ skills, projects, tasks });
+    const readiness = calculateReadinessScore({
+      skills,
+      projects,
+      tasks,
+      roadmaps: roadmapActivity,
+    });
 
     res.json({
       user: {
