@@ -21,7 +21,7 @@ function profileWithRole(role: UserProfile["role"]): UserProfile {
     targetRole: null,
     preferredStack: [],
     role,
-    status: "ACTIVE",
+    status: "active",
     createdAt: "2026-01-01T00:00:00.000Z",
     updatedAt: "2026-01-01T00:00:00.000Z",
   };
@@ -78,14 +78,14 @@ describe("RequireAuth", () => {
 
   describe("requireAdmin", () => {
     it("renders children for an admin", () => {
-      renderGuard({ user: verifiedUser, profile: profileWithRole("ADMIN") }, true);
+      renderGuard({ user: verifiedUser, profile: profileWithRole("admin") }, true);
 
       expect(screen.getByText("protected content")).toBeInTheDocument();
       expect(replace).not.toHaveBeenCalled();
     });
 
     it("redirects a non-admin to the dashboard", () => {
-      renderGuard({ user: verifiedUser, profile: profileWithRole("USER") }, true);
+      renderGuard({ user: verifiedUser, profile: profileWithRole("user") }, true);
 
       expect(screen.queryByText("protected content")).not.toBeInTheDocument();
       expect(replace).toHaveBeenCalledWith("/dashboard");

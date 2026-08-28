@@ -4,9 +4,22 @@ import { Card } from "@/src/components/ui/Card";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { ReadinessGauge } from "@/src/components/ui/ReadinessGauge";
 import { Sparkle } from "@/src/components/ui/Sparkle";
-import { mockProjects, mockSkills, mockTasks, mockUser } from "@/src/data/mockData";
 import { routes } from "@/src/constants/routes";
 import { cn } from "@/src/lib/utils";
+
+/**
+ * Static illustration for the marketing hero. Deliberately local constants
+ * rather than the shared mock fixtures the app once imported here: this is
+ * sample copy on a public page, not a stand-in for a signed-in user's data, and
+ * keeping it here stops it being mistaken for either.
+ */
+const SAMPLE = {
+  targetRole: "Frontend Developer Intern",
+  readinessScore: 78,
+  skillsTracked: 12,
+  openTasks: 5,
+  project: { title: "Developer Portfolio", progress: 65 },
+};
 
 const modules = [
   {
@@ -37,9 +50,6 @@ const modules = [
 ];
 
 export default function HomePage() {
-  const activeProject = mockProjects[0];
-  const openTasks = mockTasks.filter((task) => !task.completed).length;
-
   return (
     <main className="min-h-screen bg-panel text-ink">
       <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
@@ -86,31 +96,31 @@ export default function HomePage() {
             <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
               Readiness instrument
             </p>
-            <p className="text-sm text-ink-dim">{mockUser.targetRole}</p>
+            <p className="text-sm text-ink-dim">{SAMPLE.targetRole}</p>
           </div>
           <div className="flex justify-center py-6">
-            <ReadinessGauge value={mockUser.readinessScore} size={168} />
+            <ReadinessGauge value={SAMPLE.readinessScore} size={168} />
           </div>
           <div className="grid grid-cols-2 gap-3 border-t border-bezel pt-5">
             <div>
               <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
                 Skills tracked
               </p>
-              <p className="mt-1 font-display text-2xl font-bold text-ink">{mockSkills.length}</p>
+              <p className="mt-1 font-display text-2xl font-bold text-ink">{SAMPLE.skillsTracked}</p>
             </div>
             <div>
               <p className="font-display text-micro uppercase tracking-wider text-ink-dim">
                 Open tasks
               </p>
-              <p className="mt-1 font-display text-2xl font-bold text-ink">{openTasks}</p>
+              <p className="mt-1 font-display text-2xl font-bold text-ink">{SAMPLE.openTasks}</p>
             </div>
           </div>
           <div className="mt-5 rounded-bezel border border-bezel bg-console-raised p-4">
             <div className="mb-2 flex items-center justify-between gap-4">
-              <p className="text-sm font-semibold text-ink">{activeProject.title}</p>
-              <p className="font-display text-sm text-ink-dim">{activeProject.progress}%</p>
+              <p className="text-sm font-semibold text-ink">{SAMPLE.project.title}</p>
+              <p className="font-display text-sm text-ink-dim">{SAMPLE.project.progress}%</p>
             </div>
-            <ProgressBar value={activeProject.progress} tone="heading" />
+            <ProgressBar value={SAMPLE.project.progress} tone="heading" />
           </div>
         </Card>
       </section>

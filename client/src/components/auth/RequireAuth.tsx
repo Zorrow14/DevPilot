@@ -28,7 +28,7 @@ export function RequireAuth({ children, requireAdmin = false }: RequireAuthProps
   // Only block on the profile when the role actually gates this subtree.
   const needsProfile = requireAdmin && isAuthenticated;
   const isCheckingRole = needsProfile && profileLoading;
-  const isAllowed = isAuthenticated && (!requireAdmin || profile?.role === "ADMIN");
+  const isAllowed = isAuthenticated && (!requireAdmin || profile?.role === "admin");
 
   useEffect(() => {
     if (loading || isCheckingRole) {

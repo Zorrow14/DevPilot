@@ -53,9 +53,9 @@ export default function ProfilePage() {
                 {profile.targetRole ? (
                   <Badge tone="heading">{profile.targetRole}</Badge>
                 ) : null}
-                <Badge tone="beacon">{profile.role.toLowerCase()}</Badge>
-                <Badge tone={profile.status === "ACTIVE" ? "nominal" : "alert"}>
-                  {profile.status.toLowerCase()}
+                <Badge tone="beacon">{profile.role}</Badge>
+                <Badge tone={profile.status === "active" ? "nominal" : "alert"}>
+                  {profile.status}
                 </Badge>
               </div>
             </div>

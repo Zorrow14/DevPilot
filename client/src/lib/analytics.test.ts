@@ -12,7 +12,7 @@ import {
 import type { ReadinessBreakdown } from "./api";
 import type { Project, Roadmap, Skill, Task } from "@/src/types";
 
-function skill(category: string, progress: number, id = category + progress): Skill {
+function skill(category: string, progress: number, id: string = category + progress): Skill {
   return {
     id,
     name: `${category} skill`,
@@ -24,7 +24,7 @@ function skill(category: string, progress: number, id = category + progress): Sk
   };
 }
 
-function project(status: Project["status"], id = status): Project {
+function project(status: Project["status"], id: string = status): Project {
   return {
     id,
     title: "Project",
@@ -37,7 +37,7 @@ function project(status: Project["status"], id = status): Project {
   };
 }
 
-function task(status: Task["status"], id = status): Task {
+function task(status: Task["status"], id: string = status): Task {
   return {
     id,
     projectId: "p1",

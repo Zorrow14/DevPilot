@@ -142,8 +142,8 @@ export type UserProfile = {
   imageUrl: string | null;
   targetRole: string | null;
   preferredStack: string[];
-  role: "USER" | "ADMIN";
-  status: "ACTIVE" | "INACTIVE";
+  role: "user" | "admin";
+  status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
 };
@@ -306,8 +306,6 @@ export const api = {
       body: { week, completed },
     }),
   deleteRoadmap: (id: string) => apiRequest<void>(`/api/roadmaps/${id}`, { method: "DELETE" }),
-  getAnnouncements: (signal?: AbortSignal) =>
-    apiRequest<Announcement[]>("/api/announcements", { signal }),
   getAdminOverview: (signal?: AbortSignal) =>
     apiRequest<AdminOverviewResponse>("/api/admin/overview", { signal }),
   getAdminUsers: (search?: string, signal?: AbortSignal) =>
@@ -320,8 +318,6 @@ export const api = {
     apiRequest<AdminProject[]>(`/api/admin/projects${toQuery(filters)}`, { signal }),
   deleteAdminProject: (id: string) =>
     apiRequest<void>(`/api/admin/projects/${id}`, { method: "DELETE" }),
-  getAdminSkills: (signal?: AbortSignal) =>
-    apiRequest<AdminSkill[]>("/api/admin/skills", { signal }),
   getAdminSkillAnalytics: (signal?: AbortSignal) =>
     apiRequest<SkillAnalytics>("/api/admin/skills/analytics", { signal }),
   getAdminRoadmaps: (signal?: AbortSignal) =>
@@ -350,8 +346,6 @@ export const api = {
   getMe: (signal?: AbortSignal) => apiRequest<UserProfile>("/api/users/me", { signal }),
   updateMe: (body: UserProfilePayload) =>
     apiRequest<UserProfile>("/api/users/me", { method: "PATCH", body }),
-  syncUser: (signal?: AbortSignal) =>
-    apiRequest<UserProfile>("/api/auth/sync-user", { method: "POST", signal }),
 
   createSkill: (body: SkillPayload) => apiRequest<Skill>("/api/skills", { method: "POST", body }),
   updateSkill: (id: string, body: SkillPayload) =>

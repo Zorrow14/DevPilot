@@ -267,8 +267,7 @@ Features include:
 * Total roadmaps generated
 * Most common career goals
 * Recent roadmap generations
-* AI usage trends
-* Failed AI request placeholders
+* Weekly follow-through per roadmap
 
 ---
 
@@ -339,8 +338,8 @@ Announcements can be shown on the user dashboard for:
 
 ### AI
 
-* Mock AI roadmap generator
-* Prepared for Azure OpenAI integration
+* Google Gemini (`@google/genai`), free tier
+* Structured JSON output validated against a shared Zod schema
 
 ### Tools
 
@@ -361,7 +360,6 @@ DevPilot/
 │   ├── hooks/              # Custom React hooks
 │   ├── lib/                # Firebase and API helpers
 │   ├── types/              # TypeScript types
-│   └── data/               # Static or mock data
 │
 └── server/                 # Express.js backend
     ├── prisma/             # Prisma schema and migrations
@@ -406,9 +404,9 @@ Main relationships:
 ### Authentication
 
 ```txt
-POST /api/auth/sync-user
-GET  /api/users/me
-PUT  /api/users/me
+POST  /api/auth/sync-user
+GET   /api/users/me
+PATCH /api/users/me
 ```
 
 ### Skills
@@ -442,8 +440,10 @@ DELETE /api/tasks/:id
 ### Roadmaps
 
 ```txt
-POST /api/roadmaps/generate
-GET  /api/roadmaps
+POST   /api/roadmaps/generate
+GET    /api/roadmaps
+PATCH  /api/roadmaps/:id/progress
+DELETE /api/roadmaps/:id
 ```
 
 ### Dashboard
@@ -455,7 +455,9 @@ GET /api/dashboard/stats
 ### Feedback
 
 ```txt
-POST /api/feedback
+GET    /api/feedback
+POST   /api/feedback
+DELETE /api/feedback/:id
 ```
 
 ### Announcements
@@ -473,6 +475,8 @@ PATCH  /api/admin/users/:id/role
 PATCH  /api/admin/users/:id/status
 GET    /api/admin/projects
 GET    /api/admin/skills
+GET    /api/admin/skills/analytics
+DELETE /api/admin/projects/:id
 GET    /api/admin/roadmaps
 GET    /api/admin/feedback
 PATCH  /api/admin/feedback/:id/status
@@ -510,6 +514,14 @@ DATABASE_URL=
 FIREBASE_PROJECT_ID=
 FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY=
+
+# Google Gemini, for AI roadmap generation.
+# Free-tier keys: https://aistudio.google.com/apikey
+# Roadmap generation returns 503 with a clear message when this is unset;
+# every other route works without it.
+GEMINI_API_KEY=
+# Optional; defaults to gemini-3.6-flash.
+GEMINI_MODEL=
 ```
 
 ---
@@ -607,27 +619,42 @@ npx prisma studio
 
 ## UI Theme
 
-DevPilot uses a professional dual-theme design system.
+DevPilot uses a single dark, instrument-panel theme — a "cockpit" rather than a
+document. It is defined entirely as Tailwind v4 `@theme` tokens in
+`client/src/app/globals.css`.
 
-### Light Mode — The Organized Studio
+The stock Tailwind palette is deliberately deleted there (`--color-*: initial`),
+so only project tokens exist and a stray `bg-slate-800` fails to compile.
 
-A clean, bright, high-end productivity interface using:
+### Surfaces
 
-* Slate 50 background
-* White elevated cards
-* Thin slate borders
-* Slate charcoal typography
-* Deep indigo accents
+* `panel` / `console` / `console-raised` — the three depth layers
+* `bezel` / `bezel-bright` — borders and edge highlights
+* `paper` / `paper-ink` — the light "sheet" that form fields are printed on
 
-### Dark Mode — The Midnight Observatory
+### Text
 
-A calm, focused, late-night developer cockpit using:
+* `ink` / `ink-dim` / `ink-faint`
 
-* Slate 900 background
-* Slate 800 cards
-* Soft off-white typography
-* Subtle slate borders
-* Luminous pastel indigo accents
+### Accents
+
+* `beacon` (amber) — primary actions and attention
+* `heading` (teal) — in-progress states
+* `nominal` (mint) — success and completion
+* `alert` (red) — errors and destructive actions
+* `ai` (violet) — reserved for AI-generated content only
+
+### Materials
+
+Depth comes from three `@utility` classes, not from ad-hoc shadows:
+
+* `molded` — a raised surface that catches light from above
+* `carved` — a recess cut into the panel
+* `letterpress` — text pressed into its surface
+
+On a dark background a shadow alone is nearly invisible, so `molded` and
+`carved` pair the shadow with a light or dark gradient overlay. That gradient,
+not the shadow, is what actually reads as depth.
 
 ---
 
@@ -635,7 +662,6 @@ A calm, focused, late-night developer cockpit using:
 
 Planned improvements include:
 
-* Azure OpenAI integration for real AI roadmap generation
 * Project screenshot uploads
 * Resume upload and analysis
 * Certificate tracking

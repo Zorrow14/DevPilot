@@ -31,8 +31,8 @@ const adminProfile: UserProfile = {
   imageUrl: null,
   targetRole: null,
   preferredStack: [],
-  role: "ADMIN",
-  status: "ACTIVE",
+  role: "admin",
+  status: "active",
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",
 };
@@ -94,7 +94,7 @@ describe("AuthProvider", () => {
       emitAuthState({ uid: "firebase-1", emailVerified: true });
     });
 
-    await waitFor(() => expect(screen.getByTestId("role")).toHaveTextContent("ADMIN"));
+    await waitFor(() => expect(screen.getByTestId("role")).toHaveTextContent("admin"));
     expect(screen.getByTestId("profile-loading")).toHaveTextContent("false");
   });
 
@@ -139,7 +139,7 @@ describe("AuthProvider", () => {
     await act(async () => {
       emitAuthState({ uid: "firebase-1", emailVerified: true });
     });
-    await waitFor(() => expect(screen.getByTestId("role")).toHaveTextContent("ADMIN"));
+    await waitFor(() => expect(screen.getByTestId("role")).toHaveTextContent("admin"));
 
     // A different uid must not keep showing the prior account's role.
     getMe.mockReturnValue(new Promise(() => {}));

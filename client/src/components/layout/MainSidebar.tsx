@@ -22,7 +22,7 @@ const navItems = [
 export function MainSidebar() {
   const pathname = usePathname();
   const { profile } = useAuth();
-  const isAdmin = profile?.role === "ADMIN";
+  const isAdmin = profile?.role === "admin";
 
   return (
     <aside className="border-b border-bezel bg-console px-5 py-4 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r lg:py-6">

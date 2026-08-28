@@ -34,6 +34,18 @@ export function Button({
   );
 
   if (href) {
+    // A disabled link is not a thing in HTML, and silently dropping `disabled`
+    // let a busy action stay clickable. Render the same surface as a real
+    // disabled button instead, with the link removed from the tab order and
+    // hidden from assistive tech.
+    if (disabled) {
+      return (
+        <span className={cn(classes, "cursor-not-allowed opacity-40 shadow-none")} aria-disabled>
+          {children}
+        </span>
+      );
+    }
+
     return (
       <Link href={href} className={classes}>
         {children}
