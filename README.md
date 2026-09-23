@@ -522,6 +522,9 @@ FIREBASE_PRIVATE_KEY=
 GEMINI_API_KEY=
 # Optional; defaults to gemini-3.6-flash.
 GEMINI_MODEL=
+
+# Comma-separated addresses granted ADMIN on sign-in. Promote-only.
+ADMIN_EMAILS=
 ```
 
 ---
@@ -614,6 +617,23 @@ npx prisma studio
 7. The backend syncs the Firebase user with PostgreSQL.
 8. Protected routes use the authenticated PostgreSQL user.
 9. Admin routes check the user role before allowing access.
+
+### Creating the first admin
+
+Every account is created as a `USER`, and the only route that changes a role is
+itself behind `requireAdmin` — so a fresh database has no way into the admin
+screens. `ADMIN_EMAILS` is the way in:
+
+```env
+ADMIN_EMAILS=you@example.com,cofounder@example.com
+```
+
+Any address on that list is granted `ADMIN` when its token is next verified. It
+works whether or not the account already exists, so it can be set after signing
+up. Once you are in, manage roles from the admin UI.
+
+The list is **promote-only** — removing an address does not demote that account,
+and a user promoted through the admin screens is never reverted by it.
 
 ---
 
