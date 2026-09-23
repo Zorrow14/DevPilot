@@ -1,0 +1,61 @@
+# Render blueprint for the DevPilot API.
+#
+# Apply with: Render dashboard -> Blueprints -> New Blueprint Instance, pointed
+# at this repo. Secrets are marked `sync: false`, so Render prompts for them on
+# first apply rather than this file carrying them into git.
+services:
+  - type: web
+    name: devpilot-api
+    runtime: node
+    # The repo has no root package.json; the server is its own package.
+    rootDir: server
+    plan: free
+    healthCheckPath: /api/health
+
+    # Prisma Client is generated code that the build needs and git does not
+    # track, so it is generated here rather than committed.
+    buildCommand: npm ci && npx prisma generate && npm run build
+
+    # Migrations run at start, not at build: the build step has no reason to
+    # hold database credentials, and `migrate deploy` is idempotent, so a
+    # restart that applies nothing is a no-op. On a paid plan, move this to
+    # preDeployCommand so a failed migration stops the deploy instead of
+    # crash-looping the instance.
+    startCommand: npx prisma migrate deploy && npm run start
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        # Render injects the port to bind; server.ts already reads PORT.
+        value: 5000
+
+      # Postgres connection string. Supabase supplies this — use the pooled
+      # connection string, since a free web service opens more connections
+      # across restarts than a direct one comfortably allows.
+      - key: DATABASE_URL
+        sync: false
+
+      # Must be the deployed client origin, with no trailing slash — this is
+      # the CORS allowlist, so a mismatch fails every browser request.
+      - key: CLIENT_URL
+        sync: false
+
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      # Paste the PEM including its literal \n escapes, exactly as the service
+      # account JSON contains it.
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+
+      # Optional. Roadmap generation answers 503 without it; nothing else
+      # depends on it.
+      - key: GEMINI_API_KEY
+        sync: false
+
+      # Grants ADMIN on sign-in. Set this before the first deploy, or there is
+      # no way into the admin screens.
+      - key: ADMIN_EMAILS
+        sync: false
