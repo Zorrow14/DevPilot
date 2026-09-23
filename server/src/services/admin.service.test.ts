@@ -44,6 +44,9 @@ beforeEach(() => {
   );
   prismaMock.task.findMany.mockResolvedValue([]);
   prismaMock.roadmap.findMany.mockResolvedValue([]);
+  prismaMock.user.count.mockResolvedValue(1);
+  prismaMock.project.count.mockResolvedValue(1);
+  prismaMock.skill.count.mockResolvedValue(1);
 });
 
 describe("self-lockout guardrails", () => {
@@ -108,7 +111,7 @@ describe("getUsers", () => {
   });
 
   it("searches name and email case-insensitively", async () => {
-    await adminService.getUsers("ada");
+    await adminService.getUsers({ search: "ada" });
 
     expect(prismaMock.user.findMany.mock.calls[0][0].where).toEqual({
       OR: [
@@ -119,7 +122,7 @@ describe("getUsers", () => {
   });
 
   it("treats a whitespace-only search as no search", async () => {
-    await adminService.getUsers("   ");
+    await adminService.getUsers({ search: "   " });
 
     expect(prismaMock.user.findMany.mock.calls[0][0].where).toBeUndefined();
   });
@@ -137,7 +140,7 @@ describe("getUsers", () => {
       { status: "TODO", project: { userId: "u2" } },
     ]);
 
-    const [first, second] = await adminService.getUsers();
+    const { data: [first, second] } = await adminService.getUsers();
 
     // u1 completed everything it had; u2 completed nothing.
     expect(first.readinessScore).toBeGreaterThan(second.readinessScore);
@@ -171,7 +174,7 @@ describe("getUsers", () => {
       },
     ]);
 
-    const [first, second] = await adminService.getUsers();
+    const { data: [first, second] } = await adminService.getUsers();
 
     expect(first.readinessScore).toBeGreaterThan(second.readinessScore);
   });
@@ -205,7 +208,7 @@ describe("getUsers", () => {
       storedUser({ role: "ADMIN", status: "INACTIVE" }),
     ]);
 
-    const [user] = await adminService.getUsers();
+    const { data: [user] } = await adminService.getUsers();
 
     expect(user.role).toBe("admin");
     expect(user.status).toBe("inactive");
@@ -252,7 +255,7 @@ describe("getProjects", () => {
       },
     ]);
 
-    const [project] = await adminService.getProjects();
+    const { data: [project] } = await adminService.getProjects();
 
     expect(project.ownerName).toBe("Ada");
     expect(project.taskCount).toBe(3);
@@ -349,5 +352,95 @@ describe("getPlatformStats", () => {
     expect(stats.users).toBe(10);
     expect(stats.activeUsers).toBe(7);
     expect(stats.admins).toBe(2);
+  });
+});
+
+describe("admin listing pagination", () => {
+  beforeEach(() => {
+    prismaMock.user.findMany.mockResolvedValue([storedUser()]);
+    prismaMock.project.findMany.mockResolvedValue([]);
+    prismaMock.skill.findMany.mockResolvedValue([]);
+  });
+
+  it("asks Postgres for one page rather than the whole users table", async () => {
+    await adminService.getUsers({ page: 2, pageSize: 10 });
+
+    expect(prismaMock.user.findMany.mock.calls[0][0]).toMatchObject({ skip: 10, take: 10 });
+  });
+
+  it("reports the unpaged total alongside the page", async () => {
+    prismaMock.user.count.mockResolvedValue(57);
+
+    const result = await adminService.getUsers({ page: 2, pageSize: 25 });
+
+    expect(result.pagination).toEqual({ page: 2, pageSize: 25, total: 57, totalPages: 3 });
+  });
+
+  it("counts with the same filter it lists with", async () => {
+    // A count that ignored the search would advertise pages that are empty.
+    await adminService.getUsers({ search: "ada" });
+
+    expect(prismaMock.user.count.mock.calls[0][0].where).toEqual(
+      prismaMock.user.findMany.mock.calls[0][0].where,
+    );
+  });
+
+  // The scans this replaces were the real scaling problem: scoring 25 users
+  // read every task and every roadmap on the platform, roadmaps including their
+  // full JSON content.
+  it("scopes the task scan to the users on the page", async () => {
+    prismaMock.user.findMany.mockResolvedValue([storedUser({ id: "u1" }), storedUser({ id: "u2" })]);
+
+    await adminService.getUsers({ page: 1, pageSize: 2 });
+
+    expect(prismaMock.task.findMany.mock.calls[0][0].where).toEqual({
+      project: { userId: { in: ["u1", "u2"] } },
+    });
+  });
+
+  it("scopes the roadmap scan to the users on the page", async () => {
+    prismaMock.user.findMany.mockResolvedValue([storedUser({ id: "u1" })]);
+
+    await adminService.getUsers({ page: 1, pageSize: 1 });
+
+    expect(prismaMock.roadmap.findMany.mock.calls[0][0].where).toEqual({
+      userId: { in: ["u1"] },
+    });
+  });
+
+  it("does not query tasks or roadmaps at all for an empty page", async () => {
+    prismaMock.user.findMany.mockResolvedValue([]);
+
+    await adminService.getUsers({ page: 99 });
+
+    expect(prismaMock.task.findMany).not.toHaveBeenCalled();
+    expect(prismaMock.roadmap.findMany).not.toHaveBeenCalled();
+  });
+
+  it("pages the project listing and keeps its filters on the count", async () => {
+    prismaMock.project.count.mockResolvedValue(3);
+
+    const result = await adminService.getProjects({ status: "COMPLETED", page: 2, pageSize: 1 });
+
+    expect(prismaMock.project.findMany.mock.calls[0][0]).toMatchObject({ skip: 1, take: 1 });
+    expect(prismaMock.project.count.mock.calls[0][0].where).toEqual(
+      prismaMock.project.findMany.mock.calls[0][0].where,
+    );
+    expect(result.pagination.total).toBe(3);
+  });
+
+  it("pages the skill listing", async () => {
+    prismaMock.skill.count.mockResolvedValue(40);
+
+    const result = await adminService.getSkills({ page: 2, pageSize: 20 });
+
+    expect(prismaMock.skill.findMany.mock.calls[0][0]).toMatchObject({ skip: 20, take: 20 });
+    expect(result.pagination.totalPages).toBe(2);
+  });
+
+  it("caps an oversized page size on the way to Prisma", async () => {
+    await adminService.getUsers({ pageSize: 999_999 });
+
+    expect(prismaMock.user.findMany.mock.calls[0][0].take).toBe(100);
   });
 });

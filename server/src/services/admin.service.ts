@@ -1,6 +1,7 @@
 import type { Prisma, Project, Skill, User } from "@prisma/client";
 
 import { prisma } from "../lib/prisma";
+import { paginated, resolvePaging, type PageRequest, type Paginated } from "./pagination";
 import { getRoadmapActivityByUser, type RoadmapActivity } from "./roadmap.service";
 import { calculateReadinessScore } from "../utils/calculateReadinessScore";
 import { ForbiddenError, NotFoundError } from "../utils/errors";
@@ -47,13 +48,18 @@ function formatAdminUser(
 export type AdminUserView = ReturnType<typeof formatAdminUser>;
 
 /**
- * Every user, with the readiness score the admin table shows.
+ * One page of users, with the readiness score the admin table shows.
  *
  * Tasks hang off projects rather than users, so they are fetched once and
- * grouped in memory — a per-user query would be one round trip per row.
+ * grouped in memory — a per-user query would be one round trip per row. Both
+ * that read and the roadmap read are scoped to the ids on this page: scoring 25
+ * users should not cost a scan of every task and roadmap on the platform.
  */
-export async function getUsers(search?: string) {
-  const trimmed = search?.trim();
+export async function getUsers(
+  options: PageRequest & { search?: string } = {},
+): Promise<Paginated<AdminUserView>> {
+  const trimmed = options.search?.trim();
+  const { page, pageSize, skip, take } = resolvePaging(options);
 
   const where: Prisma.UserWhereInput | undefined = trimmed
     ? {
@@ -64,20 +70,30 @@ export async function getUsers(search?: string) {
       }
     : undefined;
 
-  const users = await prisma.user.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      skills: { select: { category: true, progress: true } },
-      projects: { select: { id: true, status: true } },
-    },
-  });
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: {
+        skills: { select: { category: true, progress: true } },
+        projects: { select: { id: true, status: true } },
+      },
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  const pageUserIds = users.map((user) => user.id);
 
   const [tasks, roadmapsByUser] = await Promise.all([
-    prisma.task.findMany({
-      select: { status: true, project: { select: { userId: true } } },
-    }),
-    getRoadmapActivityByUser(),
+    pageUserIds.length
+      ? prisma.task.findMany({
+          where: { project: { userId: { in: pageUserIds } } },
+          select: { status: true, project: { select: { userId: true } } },
+        })
+      : Promise.resolve([]),
+    getRoadmapActivityByUser(pageUserIds),
   ]);
 
   const tasksByUser = new Map<string, string[]>();
@@ -93,13 +109,15 @@ export async function getUsers(search?: string) {
     }
   }
 
-  return users.map((user) =>
+  const rows = users.map((user) =>
     formatAdminUser({
       ...user,
       taskStatuses: tasksByUser.get(user.id) ?? [],
       roadmapActivity: roadmapsByUser.get(user.id) ?? [],
     }),
   );
+
+  return paginated(rows, total, { page, pageSize });
 }
 
 export async function updateUserRole(actingAdminId: string, userId: string, role: "USER" | "ADMIN") {
@@ -160,20 +178,31 @@ async function findUser(userId: string) {
 }
 
 /** Every project with its owner, for the monitoring table. */
-export async function getProjects(filters: { status?: string; priority?: string } = {}) {
-  const projects = await prisma.project.findMany({
-    where: {
-      status: filters.status as never,
-      priority: filters.priority as never,
-    },
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: { select: { id: true, name: true, email: true } },
-      _count: { select: { tasks: true } },
-    },
-  });
+export async function getProjects(
+  filters: PageRequest & { status?: string; priority?: string } = {},
+) {
+  const { page, pageSize, skip, take } = resolvePaging(filters);
 
-  return projects.map((project) => ({
+  const where = {
+    status: filters.status as never,
+    priority: filters.priority as never,
+  };
+
+  const [projects, total] = await Promise.all([
+    prisma.project.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        _count: { select: { tasks: true } },
+      },
+    }),
+    prisma.project.count({ where }),
+  ]);
+
+  const rows = projects.map((project) => ({
     id: project.id,
     title: project.title,
     description: project.description ?? "",
@@ -188,6 +217,8 @@ export async function getProjects(filters: { status?: string; priority?: string 
     ownerEmail: project.user.email,
     createdAt: project.createdAt.toISOString().slice(0, 10),
   }));
+
+  return paginated(rows, total, { page, pageSize });
 }
 
 export async function deleteProject(projectId: string) {
@@ -318,14 +349,21 @@ export async function getPlatformStats() {
   };
 }
 
-/** Skills across all users, for the raw analytics listing. */
-export async function getSkills() {
-  const skills = await prisma.skill.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { user: { select: { id: true, name: true } } },
-  });
+/** One page of skills across all users, for the raw analytics listing. */
+export async function getSkills(options: PageRequest = {}) {
+  const { page, pageSize, skip, take } = resolvePaging(options);
 
-  return skills.map((skill) => ({
+  const [skills, total] = await Promise.all([
+    prisma.skill.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take,
+      include: { user: { select: { id: true, name: true } } },
+    }),
+    prisma.skill.count(),
+  ]);
+
+  const rows = skills.map((skill) => ({
     id: skill.id,
     name: skill.name,
     category: skill.category,
@@ -334,4 +372,6 @@ export async function getSkills() {
     ownerName: skill.user.name,
     lastPracticed: skill.lastPracticedAt?.toISOString().slice(0, 10) ?? "",
   }));
+
+  return paginated(rows, total, { page, pageSize });
 }

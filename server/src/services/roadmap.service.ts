@@ -248,8 +248,26 @@ export async function getRoadmapActivity(userId: string): Promise<RoadmapActivit
  * The same activity for every user at once, keyed by user id — one query for
  * the admin table rather than one per row.
  */
-export async function getRoadmapActivityByUser(): Promise<Map<string, RoadmapActivity[]>> {
+/**
+ * Roadmap follow-through, grouped by user, for readiness scoring.
+ *
+ * `userIds` scopes the read to the users actually being scored. Without it this
+ * pulls every roadmap on the platform — including each one's full JSON content,
+ * which is the largest column in the schema — to score a single page of users.
+ * Omitting it still reads everything, so pass it from any paged caller.
+ */
+export async function getRoadmapActivityByUser(
+  userIds?: string[],
+): Promise<Map<string, RoadmapActivity[]>> {
+  // An empty list means "no users to score", not "no filter" — guarded here
+  // because `{ in: [] }` and `undefined` differ in Prisma and the wrong one
+  // silently reads the whole table.
+  if (userIds?.length === 0) {
+    return new Map();
+  }
+
   const roadmaps = await prisma.roadmap.findMany({
+    where: userIds ? { userId: { in: userIds } } : undefined,
     select: { userId: true, content: true, completedWeeks: true },
   });
 

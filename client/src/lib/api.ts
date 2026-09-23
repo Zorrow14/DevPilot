@@ -274,6 +274,34 @@ async function apiRequest<T>(path: string, options: RequestOptions = {}): Promis
  * "no filter" rather than `?search=`, which the server would treat as a real
  * (never-matching) term.
  */
+/**
+ * A page of rows plus the counts needed to draw controls. The admin listings
+ * read across every user, so they are paged at the API rather than sliced in
+ * the browser — the whole table never reaches the client.
+ */
+export type Paginated<T> = {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export type PageParams = {
+  page?: number;
+  pageSize?: number;
+};
+
+/** Page params as query strings, dropped when absent so the server defaults. */
+function pageQuery({ page, pageSize }: PageParams) {
+  return {
+    page: page === undefined ? undefined : String(page),
+    pageSize: pageSize === undefined ? undefined : String(pageSize),
+  };
+}
+
 function toQuery(params: Record<string, string | undefined>) {
   const search = new URLSearchParams();
 
@@ -308,14 +336,24 @@ export const api = {
   deleteRoadmap: (id: string) => apiRequest<void>(`/api/roadmaps/${id}`, { method: "DELETE" }),
   getAdminOverview: (signal?: AbortSignal) =>
     apiRequest<AdminOverviewResponse>("/api/admin/overview", { signal }),
-  getAdminUsers: (search?: string, signal?: AbortSignal) =>
-    apiRequest<AdminUser[]>(`/api/admin/users${toQuery({ search })}`, { signal }),
+  getAdminUsers: (search?: string, page: PageParams = {}, signal?: AbortSignal) =>
+    apiRequest<Paginated<AdminUser>>(
+      `/api/admin/users${toQuery({ search, ...pageQuery(page) })}`,
+      { signal },
+    ),
   setUserRole: (id: string, role: "user" | "admin") =>
     apiRequest<AdminUser>(`/api/admin/users/${id}/role`, { method: "PATCH", body: { role } }),
   setUserStatus: (id: string, status: "active" | "inactive") =>
     apiRequest<AdminUser>(`/api/admin/users/${id}/status`, { method: "PATCH", body: { status } }),
-  getAdminProjects: (filters: { status?: string; priority?: string } = {}, signal?: AbortSignal) =>
-    apiRequest<AdminProject[]>(`/api/admin/projects${toQuery(filters)}`, { signal }),
+  getAdminProjects: (
+    filters: { status?: string; priority?: string } = {},
+    page: PageParams = {},
+    signal?: AbortSignal,
+  ) =>
+    apiRequest<Paginated<AdminProject>>(
+      `/api/admin/projects${toQuery({ ...filters, ...pageQuery(page) })}`,
+      { signal },
+    ),
   deleteAdminProject: (id: string) =>
     apiRequest<void>(`/api/admin/projects/${id}`, { method: "DELETE" }),
   getAdminSkillAnalytics: (signal?: AbortSignal) =>

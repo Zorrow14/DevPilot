@@ -21,6 +21,7 @@ import { getAllFeedback, updateFeedbackStatus } from "../controllers/feedback.co
 import { validate } from "../middleware/validate.middleware";
 import {
   adminProjectQuerySchema,
+  adminSkillQuerySchema,
   adminUserQuerySchema,
   updateUserRoleSchema,
   updateUserStatusSchema,
@@ -47,7 +48,7 @@ router.patch("/users/:id/status", validate(updateUserStatusSchema), updateUserSt
 router.get("/projects", validate(adminProjectQuerySchema, "query"), getProjects);
 router.delete("/projects/:id", deleteProject);
 
-router.get("/skills", getSkills);
+router.get("/skills", validate(adminSkillQuerySchema, "query"), getSkills);
 router.get("/skills/analytics", getSkillAnalytics);
 
 router.get("/roadmaps", getRoadmaps);

@@ -7,6 +7,7 @@ import { AdminProjectTable } from "@/src/components/admin/AdminProjectTable";
 import { Card } from "@/src/components/ui/Card";
 import { EmptyState } from "@/src/components/ui/EmptyState";
 import { Input } from "@/src/components/ui/Input";
+import { Pagination } from "@/src/components/ui/Pagination";
 import { useApiResource } from "@/src/hooks/useApiResource";
 import { api } from "@/src/lib/api";
 
@@ -16,11 +17,16 @@ const PRIORITIES = ["low", "medium", "high"];
 export default function AdminProjectsPage() {
   const [status, setStatus] = useState("");
   const [priority, setPriority] = useState("");
+  // Narrowing a filter re-pages from the start, so it cannot land on an empty
+  // table — done in the change handlers rather than an effect.
+  const [page, setPage] = useState(1);
 
   const { data, error, isLoading, reload } = useApiResource(
-    (signal) => api.getAdminProjects({ status, priority }, signal),
-    `${status}|${priority}`,
+    (signal) => api.getAdminProjects({ status, priority }, { page }, signal),
+    `${status}|${priority}|${page}`,
   );
+
+  const projects = data?.data ?? [];
 
   return (
     <AdminShell title="Project Monitoring" description="Project health and progress across users.">
@@ -30,7 +36,10 @@ export default function AdminProjectsPage() {
             label="Status"
             as="select"
             value={status}
-            onChange={(event) => setStatus(event.target.value)}
+            onChange={(event) => {
+              setStatus(event.target.value);
+              setPage(1);
+            }}
           >
             <option value="">All statuses</option>
             {STATUSES.map((option) => (
@@ -43,7 +52,10 @@ export default function AdminProjectsPage() {
             label="Priority"
             as="select"
             value={priority}
-            onChange={(event) => setPriority(event.target.value)}
+            onChange={(event) => {
+              setPriority(event.target.value);
+              setPage(1);
+            }}
           >
             <option value="">All priorities</option>
             {PRIORITIES.map((option) => (
@@ -60,7 +72,12 @@ export default function AdminProjectsPage() {
       ) : error ? (
         <EmptyState title="Projects unavailable" description={error} />
       ) : (
-        <AdminProjectTable projects={data ?? []} onChanged={reload} />
+        <>
+          <AdminProjectTable projects={projects} onChanged={reload} />
+          {data ? (
+            <Pagination {...data.pagination} onPageChange={setPage} label="projects" />
+          ) : null}
+        </>
       )}
     </AdminShell>
   );

@@ -4,20 +4,45 @@ import * as adminService from "../services/admin.service";
 import * as announcementService from "../services/announcement.service";
 import * as feedbackService from "../services/feedback.service";
 import { getAuthUserId, getParam } from "./helpers";
+import type {
+  AdminProjectQuery,
+  AdminSkillQuery,
+  AdminUserQuery,
+} from "../validators/admin.validator";
+
+/**
+ * Preview rows per list on the overview screen. The overview shows the top of
+ * each table and links to the full listing, so it takes a first page rather
+ * than the whole table — the headline numbers come from getPlatformStats(),
+ * which counts in the database instead of in memory.
+ */
+const OVERVIEW_PREVIEW_SIZE = 10;
 
 export async function getOverview(_req: Request, res: Response, next: NextFunction) {
   try {
+    const preview = { page: 1, pageSize: OVERVIEW_PREVIEW_SIZE };
+
     const [stats, users, projects, skills, roadmaps, feedback, announcements] = await Promise.all([
       adminService.getPlatformStats(),
-      adminService.getUsers(),
-      adminService.getProjects(),
-      adminService.getSkills(),
+      adminService.getUsers(preview),
+      adminService.getProjects(preview),
+      adminService.getSkills(preview),
       adminService.getRoadmapAnalytics(),
       feedbackService.getAllFeedback(),
       announcementService.getAnnouncements(),
     ]);
 
-    res.json({ stats, users, projects, skills, roadmaps, feedback, announcements });
+    // Unwrapped to plain arrays: the overview's shape predates paging and its
+    // consumers render previews, not paged tables.
+    res.json({
+      stats,
+      users: users.data,
+      projects: projects.data,
+      skills: skills.data,
+      roadmaps,
+      feedback,
+      announcements,
+    });
   } catch (error) {
     next(error);
   }
@@ -25,8 +50,8 @@ export async function getOverview(_req: Request, res: Response, next: NextFuncti
 
 export async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {
-    const { search } = req.query as { search?: string };
-    res.json(await adminService.getUsers(search));
+    const { search, page, pageSize } = req.query as unknown as AdminUserQuery;
+    res.json(await adminService.getUsers({ search, page, pageSize }));
   } catch (error) {
     next(error);
   }
@@ -60,8 +85,8 @@ export async function updateUserStatus(req: Request, res: Response, next: NextFu
 
 export async function getProjects(req: Request, res: Response, next: NextFunction) {
   try {
-    const { status, priority } = req.query as { status?: string; priority?: string };
-    res.json(await adminService.getProjects({ status, priority }));
+    const { status, priority, page, pageSize } = req.query as unknown as AdminProjectQuery;
+    res.json(await adminService.getProjects({ status, priority, page, pageSize }));
   } catch (error) {
     next(error);
   }
@@ -76,9 +101,10 @@ export async function deleteProject(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function getSkills(_req: Request, res: Response, next: NextFunction) {
+export async function getSkills(req: Request, res: Response, next: NextFunction) {
   try {
-    res.json(await adminService.getSkills());
+    const { page, pageSize } = req.query as unknown as AdminSkillQuery;
+    res.json(await adminService.getSkills({ page, pageSize }));
   } catch (error) {
     next(error);
   }

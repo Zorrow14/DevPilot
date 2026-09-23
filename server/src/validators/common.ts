@@ -131,3 +131,23 @@ export const idParam = z.object({
 export const projectIdParam = z.object({
   projectId: z.string().min(1, "A project id is required."),
 });
+
+/**
+ * Paging for admin listings. Query strings arrive as text, so both coerce.
+ *
+ * pageSize is capped rather than merely defaulted: the cap is the whole point,
+ * since an uncapped value would let a caller ask for the entire table back and
+ * undo the paging.
+ */
+export const pageField = z.coerce
+  .number()
+  .int("Page must be a whole number of 1 or more.")
+  .min(1, "Page must be a whole number of 1 or more.")
+  .optional();
+
+export const pageSizeField = z.coerce
+  .number()
+  .int("Page size must be a whole number between 1 and 100.")
+  .min(1, "Page size must be a whole number between 1 and 100.")
+  .max(100, "Page size must be a whole number between 1 and 100.")
+  .optional();

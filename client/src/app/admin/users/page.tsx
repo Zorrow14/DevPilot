@@ -7,6 +7,7 @@ import { UserTable } from "@/src/components/admin/UserTable";
 import { Card } from "@/src/components/ui/Card";
 import { EmptyState } from "@/src/components/ui/EmptyState";
 import { Input } from "@/src/components/ui/Input";
+import { Pagination } from "@/src/components/ui/Pagination";
 import { useApiResource } from "@/src/hooks/useApiResource";
 import { useAuth } from "@/src/hooks/useAuth";
 import { api } from "@/src/lib/api";
@@ -14,19 +15,30 @@ import { api } from "@/src/lib/api";
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const { profile } = useAuth();
 
   // Debounced so typing does not fire a request per keystroke. The committed
   // value is what keys the fetch, so useApiResource refetches only when it moves.
+  //
+  // Committing a search also re-pages from the start: searching while on page 3
+  // would otherwise ask for page 3 of a shorter result set and land on an empty
+  // table. Both happen in the timer callback so it stays one action.
   useEffect(() => {
-    const timer = setTimeout(() => setQuery(search), 300);
+    const timer = setTimeout(() => {
+      setQuery(search);
+      setPage(1);
+    }, 300);
+
     return () => clearTimeout(timer);
   }, [search]);
 
   const { data, error, isLoading, reload } = useApiResource(
-    (signal) => api.getAdminUsers(query, signal),
-    query,
+    (signal) => api.getAdminUsers(query, { page }, signal),
+    `${query}|${page}`,
   );
+
+  const users = data?.data ?? [];
 
   return (
     <AdminShell title="Users" description="Registered users, their role, and account status.">
@@ -43,13 +55,18 @@ export default function AdminUsersPage() {
         <Card>Loading users...</Card>
       ) : error ? (
         <EmptyState title="Users unavailable" description={error} />
-      ) : (data ?? []).length === 0 ? (
+      ) : users.length === 0 ? (
         <EmptyState
           title="No users found"
           description={query ? `Nothing matches "${query}".` : "No accounts have been created yet."}
         />
       ) : (
-        <UserTable users={data ?? []} currentUserId={profile?.id} onChanged={reload} />
+        <>
+          <UserTable users={users} currentUserId={profile?.id} onChanged={reload} />
+          {data ? (
+            <Pagination {...data.pagination} onPageChange={setPage} label="users" />
+          ) : null}
+        </>
       )}
     </AdminShell>
   );
